@@ -1,0 +1,24 @@
+[
+  {
+    "id": "2",
+    "name": "Toxic comment classification",
+    "input_data": "The primary input data is a single text field, `comment_text`, which contains the content of an online comment. A key characteristic of this task is the cross-lingual setting: the training data is entirely in English",
+    "output_data": "The output is a single probability value between 0.0 and 1.0. This value represents the likelihood that the given `comment_text` is \"toxic\", where 1.0 indicates a toxic comment and 0.0 indicates a non-toxic comment.",
+    "task": "The objective is to build a model that can classify whether an online comment is toxic.",
+    "data file description": "`jigsaw-toxic-comment-train.csv` : These are the primary training files, containing a large number of comments in English, each with a `comment_text` and a `toxic` label (0 or 1).",
+    "link to the dataset": [
+      "E:\\UET\\Lab\\AutoPipelineML\\toxicCommentClassify\\jigsaw-toxic-comment-train.csv"
+    ]
+  },
+  {
+    "id": "3",
+    "name": "Domain classification",
+    "input_data": "The input data for each sample consists of 1 text fields:`Title`: The title of the paper.",
+    "output_data": "The output is a probability distribution across numbers of domains.",
+    "task": "The objective is to build a model that can classify the domain of a paper based on its title.",
+    "data file description": "`train.csv`: Contains the training data. Each row represents a paper and includes its `Title` and `Domain`.",
+    "link to the dataset": [
+      "E:\\UET\\Lab\\AutoPipelineML\\QueryDomainClassification\\train.csv"
+    ]
+  }
+]
