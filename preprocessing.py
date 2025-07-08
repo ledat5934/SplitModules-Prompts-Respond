@@ -113,6 +113,7 @@ Use chunk-based or streaming approaches if necessary
 Limit batch size, use data types efficiently (float32 instead of float64, etc.)
 9. Limit the comment in the code.
 10. The entire program(include preprocessing, modeling, evaluation) should run within 30 minutes with ML algorithm and 60 minutes with Deep learning algorithm, so do not over feature engineering the data, or you can use feature selection to reduce the number of features.
+11. Test the execution on the real data or parts of it(if the dataset is large), not the dummy data.
 ## CODE STRUCTURE:
 #import necessary libraries
 

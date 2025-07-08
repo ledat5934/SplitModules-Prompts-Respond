@@ -223,7 +223,7 @@ Please provide your response in JSON format. It is acceptable to provide an empt
 # --- END: PROMPT ĐÃ ĐƯỢC CẬP NHẬT ---
 
 
-def call_gemini_for_guideline(prompt: str, model: str = "gemini-1.5-flash") -> tuple[Optional[str], int, int]:
+def call_gemini_for_guideline(prompt: str, model: str = "gemini-2.5-flash") -> tuple[Optional[str], int, int]:
     """
     Gọi Gemini để sinh guideline
     Returns: (response, input_tokens, output_tokens)
@@ -312,7 +312,7 @@ def generate_guidelines_for_dataset(guideline_input: Dict, output_dir: Path) -> 
         result = {
             "dataset_info": {
                 "id": dataset_id, "name": dataset_name,
-                "generated_at": datetime.now().isoformat(), "model_used": "gemini-1.5-flash",
+                "generated_at": datetime.now().isoformat(), "model_used": "gemini-2.5-flash",
                 "token_usage": {
                     "input_tokens": input_tokens, "output_tokens": output_tokens,
                     "total_tokens": input_tokens + output_tokens, "estimated_cost": total_cost
