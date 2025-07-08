@@ -113,7 +113,10 @@ Requirements:
 6. DO NOT save model to file - just train and evaluate
 7. Make sure the code runs completely without errors
 8. The code should run quickly and efficiently
-9. If you use hyperparemeter tuning, set the time limit or num_trials so that the code runs within 20 minutes.
+9. If you use hyperparemeter tuning, set the time limit or num_trials so that the code runs within 30 minutes.
+10. If the problem is deep learning, try to use GPU and use appropriate pretrained model if possible.
+11. Use multimodal if necessary.
+12. Limit the comment in the code.
 """
 
         # Add retry context if this is a retry
