@@ -140,7 +140,6 @@ def create_enhanced_guideline_prompt(guideline_input: Dict) -> str:
     variables_summary_str = json.dumps(create_variables_summary(variables), indent=2)
 
     prompt = f"""You are an expert Machine Learning architect. Your task is to analyze the provided dataset information and create a specific, actionable, and justified guideline for an AutoML pipeline.
-
 ## Dataset Information:
 - **Dataset**: {dataset_name}
 - **Task**: {task_desc}
@@ -156,8 +155,8 @@ def create_enhanced_guideline_prompt(guideline_input: Dict) -> str:
 Your response must be guided by the following principles. Refer to these examples to understand the expected level of detail.
 
 **BE SPECIFIC AND ACTIONABLE**: Your recommendations must be concrete actions.
-- ❌ Bad (Generic): "Handle missing values"
-- ✅ Good (Specific): "Impute 'Age' with the median"
+-  Bad (Generic): "Handle missing values"
+-  Good (Specific): "Impute 'Age' with the median"
 
 **JUSTIFY YOUR CHOICES INTERNALLY**: Even though the final JSON doesn't have a reason for every single step, your internal reasoning process must be sound. Base your choices on the data's properties (type, statistics, alerts).
 
@@ -206,7 +205,6 @@ Please provide your response in JSON format. It is acceptable to provide an empt
     }},
     "modeling": {{
         "recommended_algorithms": ["algorithm 1", "algorithm 2"],
-        "hyperparameter_tuning": ["method 1", "method 2"],
         "model_selection": ["criteria 1", "criteria 2"],
         "cross_validation": {{"method": "stratified_kfold", "folds": 5, "scoring": "appropriate_metric"}}
     }},
