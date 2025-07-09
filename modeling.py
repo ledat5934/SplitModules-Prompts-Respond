@@ -95,10 +95,11 @@ Requirements:
 1. Generate COMPLETE code which Executeable when combined with the preprocessing code
 2. Use the same variable names as the preprocessing code
 3. Consider following the modelling guidelines
-4. Include model selection, hyperparameter tuning, training, ... of your choice
-5. Use appropriate libraries and functions
-6. Test the execution on the real data or parts of it(if the dataset is large), not the dummy data.
-7. Generate a submission.csv file for the test.csv file and evaluate the model on the ground truth file.
+4. Try to choose the model architecture which provide best performance.
+5. Include model selection, hyperparameter tuning, training, ... of your choice
+6. Use appropriate libraries and functions
+7. Test the execution on the real data or parts of it(if the dataset is large), not the dummy data.
+8. Generate a submission.csv file for the test.csv file and evaluate the model on the ground truth file.
 
 ##Code format:
 #import necessary libraries
