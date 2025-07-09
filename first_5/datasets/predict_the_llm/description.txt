@@ -1,0 +1,29 @@
+As part of H2O Open Source GenAI World San Francisco, H2O.ai is excited to announce H2O.ai Hackathon - an online data science and machine learning competition.
+
+From October 24th to November 6th. Participants get a chance to apply their data science skills to a NLP/GenAI use case. Participants will share the use case, dataset, problem statement, evaluation metrics, and other key details on October 24th. Participants will be able to download the dataset and create machine-learning models and solutions.
+
+Description
+Delve deep into the world of Language Learning Models (LLMs)! The objective of this competition is to detect which out of 7 possible LLM models produced a particular output. With each model having its unique subtleties and quirks, can you identify which one generated the response?
+
+The challenge of pinpointing the origin LLM of a given output is not only intriguing but is also an area of spirited research. Understanding the nuances between different models allows for advancements in model differentiation, quality assessment, and potential applications in multiple sectors. Dive in, explore the intricacies, and contribute to this emerging area of study!
+
+Evaluation
+Teams will be evaluated using the logloss metric, formally defined as:
+
+
+A lower logloss indicates a better-performing model. Ensure that you predict the probability for each of the 7 possible models for every data point in the test set.
+
+Sample Submission Format:
+
+| id | target_0 | target_1 | target_2 | target_3 | target_4 | target_5 | target_6 |
+|----|----------|----------|----------|----------|----------|----------|----------|
+| 1  | 0.1      | 0.1      | 0.1      | 0.1      | 0.3      | 0.1      | 0.2      |
+| 2  | 0.2      | 0.2      | 0.1      | 0.1      | 0.1      | 0.1      | 0.2      |
+| .. | ...      | ...      | ...      | ...      | ...      | ...      | ...      |
+| N  | p_{N1}   | p_{N2}   | p_{N3}   | p_{N4}   | p_{N5}   | p_{N6}   | p_{N7}   |
+
+Dataset Description
+You are provided with three files:
+train.csv contains columns Question, Response, and target (with values ranging from 0-6). This dataset is for training your model.
+test.csv holds the id, Question, and Response columns. Your mission is to predict the likely model for each response.
+sample_submission.csv illustrates how your submission should look. It consists of columns id, target_0 all the way through to target_6. Ensure your submission aligns with this format for a successful evaluation.
