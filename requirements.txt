@@ -12,3 +12,4 @@ torch
 sentence-transformers
 transformers[torch]
 torchvision
+gensim

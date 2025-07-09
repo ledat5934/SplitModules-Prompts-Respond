@@ -76,6 +76,7 @@ class ModelingGenerator:
         dataset_name = metadata['name']
         task_desc = metadata['task']
         file_paths = metadata.get('link to the dataset', [])
+        ground_truth_paths = metadata.get('link to the ground truth', [])
         modeling_guideline = guidelines['guidelines'].get('modeling', {})
 
         prompt = f"""
@@ -83,7 +84,7 @@ You are an expert ML engineer. Generate Python modeling code for this dataset wh
 Dataset Name: {dataset_name}
 Task Description: {task_desc}
 File Paths: {file_paths}
-
+Ground Truth Paths: {ground_truth_paths}
 Guidelines:
 {json.dumps(modeling_guideline, indent=2)}
 
@@ -97,8 +98,7 @@ Requirements:
 4. Include model selection, hyperparameter tuning, training, ... of your choice
 5. Use appropriate libraries and functions
 6. Test the execution on the real data or parts of it(if the dataset is large), not the dummy data.
-7. The entire program(include preprocessing, modeling, evaluation) should run within 30 minutes with ML algorithm and 60 minutes with Deep learning algorithm, so do not over feature engineering the data, or you can use feature selection to reduce the number of features.
-
+7. Generate a submission.csv file for the test.csv file and evaluate the model on the ground truth file.
 
 ##Code format:
 #import necessary libraries

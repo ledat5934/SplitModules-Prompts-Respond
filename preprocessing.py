@@ -72,7 +72,7 @@ class PreprocessingGenerator:
         input_desc = metadata.get('input_data', '')
         output_desc = metadata.get('output_data', '')
         data_file_desc = metadata.get('data file description', '')
-
+        ground_truth_paths = metadata.get('link to the ground truth', [])
         preprocessing_guideline = guidelines['guidelines'].get('preprocessing', {})
         target_info = guidelines["guidelines"].get("target_identification", {})
 
@@ -87,7 +87,7 @@ Generate complete and executable Python preprocessing code for the dataset below
 - Output: {output_desc}
 - Data files: {data_file_desc}
 - File paths: {file_paths}
-
+- Ground truth paths: {ground_truth_paths}
 ## PREPROCESSING GUIDELINES:
 {json.dumps(preprocessing_guideline, indent=2)}
 
@@ -103,7 +103,7 @@ Generate complete and executable Python preprocessing code for the dataset below
 6. Include error handling and data validation
 7. Use pandas, scikit-learn, numpy as main libraries
 9. Limit the comment in the code.
-10. The entire program(include preprocessing, modeling, evaluation) should run within 30 minutes with ML algorithm and 60 minutes with Deep learning algorithm, so do not over feature engineering the data, or you can use feature selection to reduce the number of features.
+10. Preprocessing both the train and test data.
 11. Test the execution on the real data or parts of it(if the dataset is large), not the dummy data.
 12. **Critical Error Handling**: The main execution block (`if __name__ == "__main__":`) MUST be wrapped in a try...except block. If ANY exception occurs during the process, the script MUST print the error and then **exit with a non-zero status code** using `sys.exit(1)`.
 ## CODE STRUCTURE:
@@ -176,7 +176,7 @@ Error message:
     def execute_code(self, code: str, file_paths: List[str]) -> Tuple[bool, str]:
         """Execute preprocessing code and return success status and output/error"""
         print(" Executing preprocessing code...")
-        
+        print(code)
         try:
             # Create temporary file with the code
             with tempfile.NamedTemporaryFile(mode='w', suffix='.py', delete=False) as f:
@@ -199,6 +199,7 @@ Error message:
                 return True, result.stdout
             else:
                 print(" Code execution failed!")
+                print(result.stderr)
                 return False, result.stderr
                 
         except subprocess.TimeoutExpired:

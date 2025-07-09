@@ -203,7 +203,7 @@ Please provide your response in JSON format. It is acceptable to provide an empt
         "feature_engineering": ["specific technique 1", "specific technique 2"],
         "missing_values": ["strategy 1", "strategy 2"],
         "feature_selection": ["method 1", "method 2"],
-        "data_splitting": {{"train": 0.8, "val": 0.1, "test": 0.1, "strategy": "stratified"}}
+        "data_splitting": {{"train": 0.8, "val": 0.2, "strategy": "stratified"}}
     }},
     "modeling": {{
         "recommended_algorithms": ["algorithm 1", "algorithm 2"](description: SVM, Random Forest, etc, pretrained model, ...),
