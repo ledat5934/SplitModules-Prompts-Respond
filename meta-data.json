@@ -4,10 +4,20 @@
     "name": "Toxic comment classification",
     "input_data": "The primary input data is a single text field, `comment_text`, which contains the content of an online comment. A key characteristic of this task is the cross-lingual setting: the training data is entirely in English",
     "output_data": "The output is a single probability value between 0.0 and 1.0. This value represents the likelihood that the given `comment_text` is \"toxic\", where 1.0 indicates a toxic comment and 0.0 indicates a non-toxic comment.",
-    "task": "The objective is to build a model that can classify whether an online comment is toxic.",
-    "data file description": "`jigsaw-toxic-comment-train.csv` : These are the primary training files, containing a large number of comments in English, each with a `comment_text` and a `toxic` label (0 or 1).",
+    "task": "The objective is to build a model that can classify whether an online comment is toxic. Predict the toxicity of the comment in the test dataset and output the result in submission.csv which have the same format as sample_submission.csv, evaluate the model on the test_ground_truth.csv",
+    "data file description": {
+      "jigsaw-toxic-comment-train.csv": "These are the primary training files, containing a large number of comments in English, each with a `comment_text` and a `toxic` label (0 or 1).",
+      "test.csv": "The test dataset, evaluate the model on this dataset.This file does not contain the `toxic` label.",
+      "sample_submission.csv": "An example file showing the required submission format, which includes an `id` column and a `toxic` probability column.",
+      "test_ground_truth.csv": "The ground truth of the test dataset, which includes an `id` column and a `toxic` label column."
+    },
     "link to the dataset": [
-      "E:\\UET\\Lab\\AutoPipelineML\\toxicCommentClassify\\jigsaw-toxic-comment-train.csv"
+      "first_5\\datasets\\toxic_cmt_classify\\jigsaw-toxic-comment-train.csv",
+      "first_5\\datasets\\toxic_cmt_classify\\test.csv",
+      "first_5\\datasets\\toxic_cmt_classify\\sample_submission.csv"
+    ],
+    "link to the ground truth": [
+      "first_5\\ground_truths\\toxic_comment_classify\\test_ground_truth.csv"
     ]
   },
   {
@@ -15,10 +25,15 @@
     "name": "Domain classification",
     "input_data": "The input data for each sample consists of 1 text fields:`Title`: The title of the paper.",
     "output_data": "The output is a probability distribution across numbers of domains.",
-    "task": "The objective is to build a model that can classify the domain of a paper based on its title.",
-    "data file description": "`train.csv`: Contains the training data. Each row represents a paper and includes its `Title` and `Domain`.",
+    "task": "The objective is to build a model that can classify the domain of a paper based on its title.Predict the domain of the paper in the test dataset and output the result in submission.csv which have the same format as sample_submission.csv, evaluate the model on the test_ground_truth.csv",
+    "data file description": "`train.csv`: Contains the training data. Each row represents a paper and includes its `Title` and `Domain`, `train.csv` is the training dataset, `test.csv` is the test dataset, `sample_submission.csv` is the sample submission file, `test_ground_truth.csv` is the ground truth of the test dataset.",
     "link to the dataset": [
-      "E:\\UET\\Lab\\AutoPipelineML\\QueryDomainClassification\\train.csv"
+      "first_5\\datasets\\query_domain_classification\\train.csv",
+      "first_5\\datasets\\query_domain_classification\\test.csv",
+      "first_5\\datasets\\query_domain_classification\\Submission_file01.csv"
+    ],
+    "link to the ground truth": [
+      "first_5\\ground_truths\\query_domain_classification\\test_ground_truth.csv"
     ]
   },
   {
@@ -30,7 +45,8 @@
     "data file description": "`train.csv`: Contains the training data with three columns: `Question`, `Response`, and `target` (an integer from 0 to 6 indicating the correct model).",
     "link to the dataset": [
       "E:\\UET\\Lab\\AutoPipelineML\\PredictLLM\\train.csv"
-    ]
+    ],
+    "link to the ground truth":[]
   },
   {
     "id": "5",
@@ -42,7 +58,8 @@
     "link to the dataset": [
       "E:\\UET\\Lab\\AutoPipelineML\\MultilabelClassify\\COMP5329S1A2Dataset\\data",
       "E:\\UET\\Lab\\AutoPipelineML\\MultilabelClassify\\COMP5329S1A2Dataset\\train.csv"
-    ]
+    ],
+    "link to the ground truth": []
   },
   {
     "id": "6",
@@ -55,6 +72,7 @@
       "E:\\UET\\Lab\\AutoPipelineML\\PlantTraits\\train.csv",
       "E:\\UET\\Lab\\AutoPipelineML\\PlantTraits\\train_images",
       "E:\\UET\\Lab\\AutoPipelineML\\PlantTraits\\target_name_meta.tsv"
-    ]
+    ],
+    "link to the ground truth": []
   }
 ]
