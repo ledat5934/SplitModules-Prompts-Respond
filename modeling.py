@@ -116,13 +116,11 @@ Requirements:
 5. Generate meaningful evaluation metrics
 6. DO NOT save model to file - just train and evaluate
 7. Make sure the code runs completely without errors
-8. The code should run quickly and efficiently
-9. Do not use hyperparameter tuning.
-10. If the problem is deep learning, try to use GPU and use appropriate pretrained model if possible.
-11. Use multimodal if necessary.
-12. Limit the comment in the code.
-13. **Critical Error Handling**: The main execution block (`if __name__ == "__main__":`) MUST be wrapped in a try...except block. If ANY exception occurs during the process, the script MUST print the error and then **exit with a non-zero status code** using `sys.exit(1)`.
-14. IMPORTANT: The entire program(include preprocessing, modeling, evaluation) should run within 30 minutes with ML algorithm and 60 minutes with Deep learning algorithm, so do not over feature engineering the data, or you can use feature selection to reduce the number of features.
+8. Do not use hyperparameter tuning.
+19 If the problem is deep learning, try to use GPU and use appropriate pretrained model if possible.
+110 Use multimodal if necessary.
+11. Limit the comment in the code.
+12. **Critical Error Handling**: The main execution block (`if __name__ == "__main__":`) MUST be wrapped in a try...except block. If ANY exception occurs during the process, the script MUST print the error and then **exit with a non-zero status code** using `sys.exit(1)`.
 """
 
         # Add retry context if this is a retry
