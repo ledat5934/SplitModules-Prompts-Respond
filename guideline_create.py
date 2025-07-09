@@ -137,7 +137,7 @@ def create_enhanced_guideline_prompt(guideline_input: Dict) -> str:
     alerts = sample_profile.get('alerts', [])
     variables = sample_profile.get('variables', {})
     
-    variables_summary_str = json.dumps(create_variables_summary(variables), indent=2)
+    variables_summary_str = json.dumps(create_variables_summary(variables), indent=2, ensure_ascii=False)
 
     prompt = f"""You are an expert Machine Learning architect. Your task is to analyze the provided dataset information and create a specific, actionable, and justified guideline for an AutoML pipeline.
 ## Dataset Information:
@@ -178,7 +178,9 @@ Before generating the final JSON, think step-by-step:
 1. First, carefully identify the target variable and the task type (classification/regression).
 2. Second, review each variable. What are its type, statistics, and potential issues?
 3. Third, based on the data properties and the examples above, decide on the most appropriate, specific actions for each module.
-4. Finally, compile these specific actions into the required JSON format below.
+4. Consider using pretrained model for NLP or CV tasks if necessary.
+5. If use pretrained model, choose most appropriate models for the task.
+6. Finally, compile these specific actions into the required JSON format below.
 
 ## Output Format: Your response must be the JSON format below:
 Please provide your response in JSON format. It is acceptable to provide an empty list or null for recommendations if none are suitable.
@@ -204,8 +206,8 @@ Please provide your response in JSON format. It is acceptable to provide an empt
         "data_splitting": {{"train": 0.8, "val": 0.1, "test": 0.1, "strategy": "stratified"}}
     }},
     "modeling": {{
-        "recommended_algorithms": ["algorithm 1", "algorithm 2"],
-        "model_selection": ["criteria 1", "criteria 2"],
+        "recommended_algorithms": ["algorithm 1", "algorithm 2"](description: SVM, Random Forest, etc, pretrained model, ...),
+        "model_selection": [model_name1, model_name2](description: name of the pretrained model if using, if not using, leave it blank),
         "cross_validation": {{"method": "stratified_kfold", "folds": 5, "scoring": "appropriate_metric"}}
     }},
     "evaluation": {{
@@ -239,7 +241,7 @@ def call_gemini_for_guideline(prompt: str, model: str = "gemini-2.5-flash") -> t
         model_instance = genai.GenerativeModel(
             model_name=model,
             generation_config={
-                "temperature": 0.2, # Giảm nhiệt độ để có kết quả nhất quán hơn
+                "temperature": 0, # Giảm nhiệt độ để có kết quả nhất quán hơn
                 "top_p": 0.95, "top_k": 40,
                 "max_output_tokens": 8000,
                 "response_mime_type": "application/json", # Yêu cầu Gemini trả về JSON
@@ -323,7 +325,7 @@ def generate_guidelines_for_dataset(guideline_input: Dict, output_dir: Path) -> 
         
         safe_name = dataset_name.replace(' ', '_').replace('/', '_')
         output_file = output_dir / f"{dataset_id}_{safe_name}_guideline.json"
-        output_file.write_text(json.dumps(result, indent=2, ensure_ascii=False))
+        output_file.write_text(json.dumps(result, indent=2, ensure_ascii=False), encoding='utf-8')
         print(f"  Guidelines saved to: {output_file.name}")
         return result
     
@@ -354,7 +356,7 @@ def generate_all_guidelines(guideline_inputs: List[Dict], output_dir: str = "gui
             total_cost += token_usage["estimated_cost"]
             
     consolidated_file = output_path / "all_guidelines.json"
-    consolidated_file.write_text(json.dumps(all_guidelines, indent=2, ensure_ascii=False))
+    consolidated_file.write_text(json.dumps(all_guidelines, indent=2, ensure_ascii=False), encoding='utf-8')
     
     print("\n" + "=" * 70)
     print(f"All guidelines generated and saved to '{output_dir}' directory.")
@@ -389,7 +391,7 @@ def prepare_for_guideline_generation(meta_file: str = 'meta-data.json', profilin
             print(f"  Skip {ds_name} - profiling directory not found at {dataset_dir}")
             
     output_path = Path(output_file)
-    output_path.write_text(json.dumps(guideline_inputs, indent=2, ensure_ascii=False))
+    output_path.write_text(json.dumps(guideline_inputs, indent=2, ensure_ascii=False), encoding='utf-8')
     print(f"\nSaved {len(guideline_inputs)} guideline inputs to: {output_path}")
     return guideline_inputs
 

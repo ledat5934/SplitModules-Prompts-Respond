@@ -24,7 +24,7 @@ class ModelingGenerator:
         self.model = genai.GenerativeModel(
             model_name="gemini-2.5-flash",
             generation_config={
-                "temperature": 0.1,  # Lower temperature for more consistent code
+                "temperature": 0,  # Lower temperature for more consistent code
                 "top_p": 0.95,
                 "top_k": 40,
                 "max_output_tokens": 16000,
@@ -120,7 +120,8 @@ Requirements:
 10. If the problem is deep learning, try to use GPU and use appropriate pretrained model if possible.
 11. Use multimodal if necessary.
 12. Limit the comment in the code.
-13. IMPORTANT: The entire program(include preprocessing, modeling, evaluation) should run within 30 minutes with ML algorithm and 60 minutes with Deep learning algorithm, so do not over feature engineering the data, or you can use feature selection to reduce the number of features.
+13. **Critical Error Handling**: The main execution block (`if __name__ == "__main__":`) MUST be wrapped in a try...except block. If ANY exception occurs during the process, the script MUST print the error and then **exit with a non-zero status code** using `sys.exit(1)`.
+14. IMPORTANT: The entire program(include preprocessing, modeling, evaluation) should run within 30 minutes with ML algorithm and 60 minutes with Deep learning algorithm, so do not over feature engineering the data, or you can use feature selection to reduce the number of features.
 """
 
         # Add retry context if this is a retry
@@ -198,7 +199,7 @@ Error message:
                 return False, result.stderr
                 
         except subprocess.TimeoutExpired:
-            print("   Pipeline execution timed out after 60 minutes")
+            print("   Pipeline execution timed out after 30 minutes")
             print("  However, this likely means the code is executable, just slow.")
             print("  Saving the code as it appears to be working...")
             

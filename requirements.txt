@@ -7,3 +7,8 @@ bs4
 scikit-learn
 lightgbm
 nltk
+transformers
+torch
+sentence-transformers
+transformers[torch]
+torchvision

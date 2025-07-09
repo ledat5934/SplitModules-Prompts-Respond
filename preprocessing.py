@@ -26,7 +26,7 @@ class PreprocessingGenerator:
         self.model = genai.GenerativeModel(
             model_name="gemini-2.5-flash",
             generation_config={
-                "temperature": 0.1,  # Lower temperature for more consistent code
+                "temperature": 0,  # Lower temperature for more consistent code
                 "top_p": 0.95,
                 "top_k": 40,
                 "max_output_tokens": 16000,
@@ -102,18 +102,10 @@ Generate complete and executable Python preprocessing code for the dataset below
 5. Return a function `preprocess_data()` that takes file paths and returns (X_train, X_test, y_train, y_test)
 6. Include error handling and data validation
 7. Use pandas, scikit-learn, numpy as main libraries
-8.Memory constraint:
-
-Optimize the code to work within a maximum of 8 GB RAM usage
-
-Avoid loading the entire dataset into memory if it's large
-
-Use chunk-based or streaming approaches if necessary
-
-Limit batch size, use data types efficiently (float32 instead of float64, etc.)
 9. Limit the comment in the code.
 10. The entire program(include preprocessing, modeling, evaluation) should run within 30 minutes with ML algorithm and 60 minutes with Deep learning algorithm, so do not over feature engineering the data, or you can use feature selection to reduce the number of features.
 11. Test the execution on the real data or parts of it(if the dataset is large), not the dummy data.
+12. **Critical Error Handling**: The main execution block (`if __name__ == "__main__":`) MUST be wrapped in a try...except block. If ANY exception occurs during the process, the script MUST print the error and then **exit with a non-zero status code** using `sys.exit(1)`.
 ## CODE STRUCTURE:
 #import necessary libraries
 
@@ -196,7 +188,7 @@ Error message:
                 [sys.executable, temp_file],
                 capture_output=True,
                 text=True,
-                timeout=300  # 5 minute timeout
+                timeout=1200  # 20 minute timeout
             )
             
             # Clean up
@@ -211,7 +203,7 @@ Error message:
                 
         except subprocess.TimeoutExpired:
             print(" Code execution timed out!")
-            return False, "Code execution timed out after 5 minutes"
+            return True, "Code execution timed out after 20 minutes"
         except Exception as e:
             print(f" Error executing code: {e}")
             return False, str(e)
