@@ -103,6 +103,7 @@ Requirements:
 7. Test the execution on the real data or parts of it(if the dataset is large), not the dummy data.
 8. Generate a submission.csv file for the test.csv file, do not need to evaluate the model on the ground truth file.
 9. The submission.csv file may not have the same rows as the test.csv file, so you need to map the rows to the test.csv file.
+10. With deep learning model, try to use GPU and use appropriate pretrained model if possible.
 ##Code format:
 #import necessary libraries
 # Include preprocessing code
@@ -112,18 +113,15 @@ Requirements:
 
 ## IMPORTANT NOTES:
 1. The preprocessing function `preprocess_data()` is already available - use it exactly as shown
-2. Choose appropriate model based on task type (classification/regression)
-3. Include proper error handling and validation
-4. Follow the modeling guidelines for model selection and hyperparameters
-5. Generate meaningful evaluation metrics
-6. DO NOT save model to file - just train and evaluate
-7. Make sure the code runs completely without errors
-8. Do not use hyperparameter tuning.
-9. If the problem is deep learning, try to use GPU and use appropriate pretrained model if possible.
-10. Use multimodal if necessary.
-11. Use ensemble of models if necessary.
-12. Limit the comment in the code.
-13. **Critical Error Handling**: The main execution block (`if __name__ == "__main__":`) MUST be wrapped in a try...except block. If ANY exception occurs during the process, the script MUST print the error and then **exit with a non-zero status code** using `sys.exit(1)`.
+2. Include proper error handling and validation
+3. Generate meaningful evaluation metrics
+4. DO NOT save model to file - just train and evaluate
+5. Make sure the code runs completely without errors
+6. Do not use hyperparameter tuning.
+7. Use multimodal if necessary.
+8. Use ensemble of models if necessary.
+9. Limit the comment in the code.
+10. **Critical Error Handling**: The main execution block (`if __name__ == "__main__":`) MUST be wrapped in a try...except block. If ANY exception occurs during the process, the script MUST print the error and then **exit with a non-zero status code** using `sys.exit(1)`.
 
 """
 
