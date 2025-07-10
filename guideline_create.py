@@ -127,6 +127,9 @@ def create_enhanced_guideline_prompt(guideline_input: Dict) -> str:
     profiles = guideline_input['profiles']
     
     dataset_name = task_info.get('name', 'N/A')
+    input_data = task_info.get('input_description', 'N/A')
+    output_data = task_info.get('output_description', 'N/A')
+    data_file_description = task_info.get('data_file_description', 'N/A')
     task_desc = task_info.get('task_description', 'N/A')
     
     sample_summary = list(summaries.values())[0] if summaries else {}
@@ -145,6 +148,8 @@ def create_enhanced_guideline_prompt(guideline_input: Dict) -> str:
 - **Task**: {task_desc}
 - **Size**: {n_rows:,} rows, {n_cols} columns
 - **Key Quality Alerts**: {alerts[:3] if alerts else 'None'}
+- **Data File Description**: {data_file_description}
+
 
 ## Variables Analysis Summary:
 ```json
