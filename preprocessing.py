@@ -188,7 +188,7 @@ Error message:
                 [sys.executable, temp_file],
                 capture_output=True,
                 text=True,
-                timeout=1200  # 20 minute timeout
+                timeout=600  # 10 minute timeout
             )
             
             # Clean up

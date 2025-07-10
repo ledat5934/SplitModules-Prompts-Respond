@@ -185,6 +185,7 @@ Before generating the final JSON, think step-by-step:
 3. Third, based on the data properties and the examples above, decide on the most appropriate, specific actions for each module.
 4. Consider using pretrained model for NLP or CV tasks if necessary.
 5. If use pretrained model, choose most appropriate models for the task.
+6. With text data, consider between pretrained model and BOW, TF-IDF, ... base on task description.
 6. Finally, compile these specific actions into the required JSON format below.
 
 ## Output Format: Your response must be the JSON format below:
@@ -206,14 +207,17 @@ Please provide your response in JSON format. It is acceptable to provide an empt
     "preprocessing": {{
         "data_cleaning": ["specific step 1", "specific step 2"],
         "feature_engineering": ["specific technique 1", "specific technique 2"],
+        "explanation": "explanation for the feature engineering",
         "missing_values": ["strategy 1", "strategy 2"],
         "feature_selection": ["method 1", "method 2"],
         "data_splitting": {{"train": 0.8, "val": 0.2, "strategy": "stratified"}}
     }},
     "modeling": {{
-        "recommended_algorithms": ["algorithm 1", "algorithm 2"](description: SVM, Random Forest, etc, pretrained model, ...),
+        "recommended_algorithms": ["algorithm 1", "algorithm 2"],
+        "explanation": "explanation for the recommended algorithms",
         "model_selection": [model_name1, model_name2](description: name of the pretrained model if using, if not using, leave it blank),
         "cross_validation": {{"method": "stratified_kfold", "folds": 5, "scoring": "appropriate_metric"}}
+        "output_file_structure": {{"submission.csv": "submission file for the test dataset, contain n Columns:[...], have the same format with ground_truth.csv", "ground_truth.csv": "ground truth file for the test dataset"}}
     }},
     "evaluation": {{
         "metrics": ["metric 1", "metric 2"],

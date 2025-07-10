@@ -76,6 +76,7 @@ class ModelingGenerator:
         dataset_name = metadata['name']
         task_desc = metadata['task']
         file_paths = metadata.get('link to the dataset', [])
+        output_desc = metadata.get('output_data', '')
         ground_truth_paths = metadata.get('link to the ground truth', [])
         modeling_guideline = guidelines['guidelines'].get('modeling', {})
 
@@ -85,6 +86,7 @@ Dataset Name: {dataset_name}
 Task Description: {task_desc}
 File Paths: {file_paths}
 Ground Truth Paths: {ground_truth_paths}
+Output Description: {output_desc}
 Guidelines:
 {json.dumps(modeling_guideline, indent=2)}
 
@@ -95,12 +97,12 @@ Requirements:
 1. Generate COMPLETE code which Executeable when combined with the preprocessing code
 2. Use the same variable names as the preprocessing code
 3. Consider following the modelling guidelines
-4. Try to choose the model architecture which provide best performance.
+4. Try to choose the model architecture which provide best performance, do not mind the time complexity.
 5. Include model selection, hyperparameter tuning, training, ... of your choice
 6. Use appropriate libraries and functions
 7. Test the execution on the real data or parts of it(if the dataset is large), not the dummy data.
-8. Generate a submission.csv file for the test.csv file and evaluate the model on the ground truth file.
-
+8. Generate a submission.csv file for the test.csv file, do not need to evaluate the model on the ground truth file.
+9. The submission.csv file may not have the same rows as the test.csv file, so you need to map the rows to the test.csv file.
 ##Code format:
 #import necessary libraries
 # Include preprocessing code
@@ -117,10 +119,11 @@ Requirements:
 6. DO NOT save model to file - just train and evaluate
 7. Make sure the code runs completely without errors
 8. Do not use hyperparameter tuning.
-19 If the problem is deep learning, try to use GPU and use appropriate pretrained model if possible.
-110 Use multimodal if necessary.
-11. Limit the comment in the code.
-12. **Critical Error Handling**: The main execution block (`if __name__ == "__main__":`) MUST be wrapped in a try...except block. If ANY exception occurs during the process, the script MUST print the error and then **exit with a non-zero status code** using `sys.exit(1)`.
+9. If the problem is deep learning, try to use GPU and use appropriate pretrained model if possible.
+10. Use multimodal if necessary.
+11. Use ensemble of models if necessary.
+12. Limit the comment in the code.
+13. **Critical Error Handling**: The main execution block (`if __name__ == "__main__":`) MUST be wrapped in a try...except block. If ANY exception occurs during the process, the script MUST print the error and then **exit with a non-zero status code** using `sys.exit(1)`.
 """
 
         # Add retry context if this is a retry
@@ -184,7 +187,7 @@ Error message:
                 [sys.executable, temp_file],
                 capture_output=True,
                 text=True,
-                timeout=1800  # 30 minute timeout for model training
+                timeout=1200  # 20 minute timeout for model training
             )
             
             # Clean up
@@ -195,6 +198,7 @@ Error message:
                 return True, result.stdout
             else:
                 print(" Combined pipeline execution failed!")
+                print(result.stderr)
                 return False, result.stderr
                 
         except subprocess.TimeoutExpired:
