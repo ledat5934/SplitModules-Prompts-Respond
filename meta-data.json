@@ -49,7 +49,7 @@
       "first_5\\datasets\\predict_the_llm\\sample_submission.csv"
     ],
     "link to the ground truth":[
-      "first_5\\ground_truths\\predict_the_llm\\test_ground_truth.csv"
+      "first_5\\ground_truths\\predict_the_llms\\test_ground_truth.csv"
     ]
   },
   {
