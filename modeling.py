@@ -96,7 +96,7 @@ Preprocessing Code(just the code, no other text, do not include test function):
 Requirements:
 1. Generate COMPLETE code which Executeable when combined with the preprocessing code
 2. Use the same variable names as the preprocessing code
-3. Consider following the modelling guidelines
+3. Follow exactly the modelling guidelines
 4. Try to choose the model architecture which provide best performance, do not mind the time complexity.
 5. Include model selection, hyperparameter tuning, training, ... of your choice
 6. Use appropriate libraries and functions
@@ -124,6 +124,7 @@ Requirements:
 11. Use ensemble of models if necessary.
 12. Limit the comment in the code.
 13. **Critical Error Handling**: The main execution block (`if __name__ == "__main__":`) MUST be wrapped in a try...except block. If ANY exception occurs during the process, the script MUST print the error and then **exit with a non-zero status code** using `sys.exit(1)`.
+
 """
 
         # Add retry context if this is a retry
