@@ -219,6 +219,7 @@ Please provide your response in JSON format. It is acceptable to provide an empt
         "recommended_algorithms": ["algorithm"],
         "explanation": "explanation for the recommended algorithms",
         "model_selection": [model_name1, model_name2](description: name of the pretrained model if using, if not using, leave it blank),
+        "model_selection_reasoning": "explanation for the model selection",
         "output_file_structure": {{"submission.csv": "submission file for the test dataset, contain n Columns:[...], have the same format with ground_truth.csv", "ground_truth.csv": "ground truth file for the test dataset"}}
     }},
     "preprocessing": {{
