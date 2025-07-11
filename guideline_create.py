@@ -132,9 +132,19 @@ def create_enhanced_guideline_prompt(guideline_input: Dict) -> str:
     data_file_description = task_info.get('data_file_description', 'N/A')
     task_desc = task_info.get('task_description', 'N/A')
     
-    sample_summary = list(summaries.values())[0] if summaries else {}
+    sample_summary = {}
+    if summaries:
+        # Tìm summary đầu tiên có chữ 'train' trong tên file (key), không phân biệt hoa thường
+        # Nếu không tìm thấy, sẽ tự động lấy summary đầu tiên trong danh sách làm dự phòng
+        sample_summary = next(
+            (summary for filename, summary in summaries.items() if 'train' in filename.lower()),
+            list(summaries.values())[0]
+        )
+    
+    # Lấy n_rows và n_cols từ summary đã chọn
     n_rows = sample_summary.get('n_rows', 0)
     n_cols = sample_summary.get('n_cols', 0)
+
     
     sample_profile = list(profiles.values())[0] if profiles else {}
     alerts = sample_profile.get('alerts', [])

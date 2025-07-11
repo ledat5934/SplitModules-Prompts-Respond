@@ -104,6 +104,7 @@ Requirements:
 8. Generate a submission.csv file for the test.csv file, do not need to evaluate the model on the ground truth file.
 9. The submission.csv file may not have the same rows as the test.csv file, so you need to map the rows to the test.csv file.
 10. With deep learning model, try to use GPU and use appropriate pretrained model if possible.
+11. When fine tunning pretrained model, use a big number of epochs with early stopping.
 ##Code format:
 #import necessary libraries
 # Include preprocessing code
