@@ -205,6 +205,13 @@ Please provide your response in JSON format. It is acceptable to provide an empt
         "reasoning": "explanation for target selection",
         "task_type": "classification/regression/etc"
     }},
+    "modeling": {{
+        "recommended_algorithms": ["algorithm"],
+        "explanation": "explanation for the recommended algorithms",
+        "model_selection": [model_name1, model_name2](description: name of the pretrained model if using, if not using, leave it blank),
+        "cross_validation": {{"method": "stratified_kfold", "folds": 5, "scoring": "appropriate_metric"}}
+        "output_file_structure": {{"submission.csv": "submission file for the test dataset, contain n Columns:[...], have the same format with ground_truth.csv", "ground_truth.csv": "ground truth file for the test dataset"}}
+    }},
     "preprocessing": {{
         "data_cleaning": ["specific step 1", "specific step 2"],
         "feature_engineering": ["specific technique 1", "specific technique 2"],
@@ -212,13 +219,6 @@ Please provide your response in JSON format. It is acceptable to provide an empt
         "missing_values": ["strategy 1", "strategy 2"],
         "feature_selection": ["method 1", "method 2"],
         "data_splitting": {{"train": 0.8, "val": 0.2, "strategy": "stratified"}}
-    }},
-    "modeling": {{
-        "recommended_algorithms": ["algorithm 1", "algorithm 2"],
-        "explanation": "explanation for the recommended algorithms",
-        "model_selection": [model_name1, model_name2](description: name of the pretrained model if using, if not using, leave it blank),
-        "cross_validation": {{"method": "stratified_kfold", "folds": 5, "scoring": "appropriate_metric"}}
-        "output_file_structure": {{"submission.csv": "submission file for the test dataset, contain n Columns:[...], have the same format with ground_truth.csv", "ground_truth.csv": "ground truth file for the test dataset"}}
     }},
     "evaluation": {{
         "metrics": ["metric 1", "metric 2"],
