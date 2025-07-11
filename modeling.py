@@ -77,7 +77,6 @@ class ModelingGenerator:
         task_desc = metadata['task']
         file_paths = metadata.get('link to the dataset', [])
         output_desc = metadata.get('output_data', '')
-        ground_truth_paths = metadata.get('link to the ground truth', [])
         modeling_guideline = guidelines['guidelines'].get('modeling', {})
 
         prompt = f"""
@@ -85,7 +84,6 @@ You are an expert ML engineer. Generate Python modeling code for this dataset wh
 Dataset Name: {dataset_name}
 Task Description: {task_desc}
 File Paths: {file_paths}
-Ground Truth Paths: {ground_truth_paths}
 Output Description: {output_desc}
 Guidelines:
 {json.dumps(modeling_guideline, indent=2)}
@@ -101,7 +99,7 @@ Requirements:
 5. Include model selection, hyperparameter tuning, training, ... of your choice
 6. Use appropriate libraries and functions
 7. Test the execution on the real data or parts of it(if the dataset is large), not the dummy data.
-8. Generate a submission.csv file for the test.csv file, do not need to evaluate the model on the ground truth file.
+8. Generate a submission.csv file for the test.csv file.
 9. The submission.csv file may not have the same rows as the test.csv file, so you need to map the rows to the test.csv file.
 10. With deep learning model, try to use GPU and use appropriate pretrained model if possible.
 11. When fine tunning pretrained model, use a big number of epochs with early stopping.

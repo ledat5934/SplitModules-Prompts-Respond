@@ -72,7 +72,6 @@ class PreprocessingGenerator:
         input_desc = metadata.get('input_data', '')
         output_desc = metadata.get('output_data', '')
         data_file_desc = metadata.get('data file description', '')
-        ground_truth_paths = metadata.get('link to the ground truth', [])
         preprocessing_guideline = guidelines['guidelines'].get('preprocessing', {})
         target_info = guidelines["guidelines"].get("target_identification", {})
 
@@ -87,7 +86,6 @@ Generate complete and executable Python preprocessing code for the dataset below
 - Output: {output_desc}
 - Data files: {data_file_desc}
 - File paths: {file_paths}
-- Ground truth paths: {ground_truth_paths}
 ## PREPROCESSING GUIDELINES:
 {json.dumps(preprocessing_guideline, indent=2)}
 

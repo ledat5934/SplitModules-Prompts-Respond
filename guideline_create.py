@@ -196,8 +196,8 @@ Before generating the final JSON, think step-by-step:
 4. Forth, think the suitable preprocessing for the algorithm(Example: If use pretrained model for NLP tasks, feature engineering should not have 'generate embedding' step).
 4. Consider using pretrained model for NLP or CV tasks if necessary.
 5. If use pretrained model, choose most appropriate models for the task.
-6. With text data, consider between pretrained model and BOW, TF-IDF, ... base on task description.
-6. Finally, compile these specific actions into the required JSON format below.
+6. With text data, consider between pretrained model or BOW, TF-IDF, ... base on task.
+7. Finally, compile these specific actions into the required JSON format below.
 
 ## Output Format: Your response must be the JSON format below:
 Please provide your response in JSON format. It is acceptable to provide an empty list or null for recommendations if none are suitable.
@@ -220,7 +220,7 @@ Please provide your response in JSON format. It is acceptable to provide an empt
         "explanation": "explanation for the recommended algorithms",
         "model_selection": [model_name1, model_name2](description: name of the pretrained model if using, if not using, leave it blank),
         "model_selection_reasoning": "explanation for the model selection",
-        "output_file_structure": {{"submission.csv": "submission file for the test dataset, contain n Columns:[...], have the same format with ground_truth.csv", "ground_truth.csv": "ground truth file for the test dataset"}}
+        "output_file_structure": {{"submission.csv": "submission file for the test dataset, contain n Columns:[...], have the same columns but not the same rows with sample_submission.csv"}}
     }},
     "preprocessing": {{
         "data_cleaning": ["specific step 1", "specific step 2"],
