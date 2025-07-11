@@ -6,14 +6,15 @@
     "output_data": "The output is a single probability value between 0.0 and 1.0. This value represents the likelihood that the given `comment_text` is \"toxic\", where 1.0 indicates a toxic comment and 0.0 indicates a non-toxic comment.",
     "task": "The objective is to build a model that can classify whether an online comment is toxic. Predict the toxicity of the comment in the test dataset and output the result in submission.csv which have the same format but not the same number of rows as sample_submission.csv",
     "data file description": {
-      "jigsaw-toxic-comment-train.csv": "These are the primary training files, containing a large number of comments in English, each with a `comment_text` and a `toxic` label (0 or 1).",
+      "jigsaw-toxic-comment-train.csv and jigsaw-unintended-bias-train.csv": "These are the primary training files, containing a large number of comments in English, each with a `comment_text` and a `toxic` label (0 or 1).",
       "test.csv": "The test dataset, evaluate the model on this dataset.This file does not contain the `toxic` label.",
       "sample_submission.csv": "An example file showing the required submission format, which includes an `id` column and a `toxic` probability column."
     },
     "link to the dataset": [
-      "first_5\\datasets\\toxic_cmt_classify\\jigsaw-toxic-comment-train.csv",
-      "first_5\\datasets\\toxic_cmt_classify\\test.csv",
-      "first_5\\datasets\\toxic_cmt_classify\\sample_submission.csv"
+      "/kaggle/input/jadon-sancho-datasets/Datasets/datasets/toxic_cmt_classify/jigsaw-toxic-comment-train.csv",
+	  "/kaggle/input/jadon-sancho-datasets/Datasets/datasets/toxic_cmt_classify/jigsaw-unintended-bias-train.csv"
+      "/kaggle/input/jadon-sancho-datasets/Datasets/datasets/toxic_cmt_classify/test.csv",
+      "/kaggle/input/jadon-sancho-datasets/Datasets/datasets/toxic_cmt_classify/sample_submission.csv"
     ]
   },
   {
@@ -24,9 +25,9 @@
     "task": "The objective is to build a model that can classify the domain of a paper based on its title.Predict the domain of the paper in the test dataset and output the result in submission.csv which have the same format but not the same number of rows as sample_submission.csv",
     "data file description": "`train.csv`: Contains the training data. Each row represents a paper and includes its `Title` and `Domain`, `train.csv` is the training dataset, `test.csv` is the test dataset, `sample_submission.csv` is the sample submission file",
     "link to the dataset": [
-      "first_5\\datasets\\query_domain_classification\\train.csv",
-      "first_5\\datasets\\query_domain_classification\\test.csv",
-      "first_5\\datasets\\query_domain_classification\\Submission_file01.csv"
+      "/kaggle/input/jadon-sancho-datasets/Datasets/datasets/query_domain_classification/train.csv",
+      "/kaggle/input/jadon-sancho-datasets/Datasets/datasets/query_domain_classification/test.csv",
+      "/kaggle/input/jadon-sancho-datasets/Datasets/datasets/query_domain_classification/Submission_file01.csv"
     ]
   },
   {
@@ -41,9 +42,9 @@
 		"sample_submission.csv": "An example submission file showing the required format, which includes an `id` column and 7 probability columns (`target_0` through `target_6`)"
 	},
     "link to the dataset": [
-      "first_5\\datasets\\predict_the_llm\\train.csv",
-      "first_5\\datasets\\predict_the_llm\\test.csv",
-      "first_5\\datasets\\predict_the_llm\\sample_submission.csv"
+      "/kaggle/input/jadon-sancho-datasets/Datasets/datasets/predict_the_llm/train.csv",
+      "/kaggle/input/jadon-sancho-datasets/Datasets/datasets/predict_the_llm/test.csv",
+      "/kaggle/input/jadon-sancho-datasets/Datasets/datasets/predict_the_llm/sample_submission.csv"
     ]
   },
   {
@@ -59,8 +60,9 @@
 		"sample_submission.csv": "Example of an submission file, notice that the rows number is not the same as the test.csv"
 	},
     "link to the dataset": [
-      "E:\\UET\\Lab\\AutoPipelineML\\MultilabelClassify\\COMP5329S1A2Dataset\\data",
-      "E:\\UET\\Lab\\AutoPipelineML\\MultilabelClassify\\COMP5329S1A2Dataset\\train.csv"
+      "/kaggle/input/jadon-sancho-datasets/Datasets/datasets/multi_label_classification/data",
+      "/kaggle/input/jadon-sancho-datasets/Datasets/datasets/multi_label_classification/train.csv",
+	  "/kaggle/input/jadon-sancho-datasets/Datasets/datasets/multi_label_classification/test.csv"
     ]
   },
   {
@@ -78,9 +80,12 @@
 		"sample_submission.csv": "An example file showing the required submission format, which includes an `id` column and a prediction column for each of the 6 traits."
 	},
     "link to the dataset": [
-      "E:\\UET\\Lab\\AutoPipelineML\\PlantTraits\\train.csv",
-      "E:\\UET\\Lab\\AutoPipelineML\\PlantTraits\\train_images",
-      "E:\\UET\\Lab\\AutoPipelineML\\PlantTraits\\target_name_meta.tsv"
+      "/kaggle/input/jadon-sancho-datasets/Datasets/datasets/PlantTraits2024/train.csv",
+      "/kaggle/input/jadon-sancho-datasets/Datasets/datasets/PlantTraits2024/train_images",
+      "/kaggle/input/jadon-sancho-datasets/Datasets/datasets/PlantTraits2024/target_name_meta.tsv",
+	  "/kaggle/input/jadon-sancho-datasets/Datasets/datasets/PlantTraits2024/test.csv",
+	  "/kaggle/input/jadon-sancho-datasets/Datasets/datasets/PlantTraits2024/test_images",
+	  "/kaggle/input/jadon-sancho-datasets/Datasets/datasets/PlantTraits2024/sample_submission.csv"
     ]
   },
   {
@@ -91,11 +96,11 @@
     "task": "For each given argumentative discourse element, predict the quality rating of the discourse element. Predict the quality rating of the discourse element in the test dataset and output the result in submission.csv which have the same format but not the same number of rows as sample_submission.csv",
     "data file description": "- `train.csv`: Contains the training data. Each row represents an annotated discourse element and includes its `discourse_id`, the `essay_id` it belongs to, the `discourse_text`, the `discourse_type`, and the target label `discourse_effectiveness`.\n- `test.csv`: Contains the test data with the same fields as `train.csv`, except for the target label.\n- `train/`: A directory containing the full text of each training essay, stored in `.txt` files. The filename of each `.txt` file corresponds to an `essay_id` in `train.csv`.\n- `test/`: A directory containing the full text of each test essay.\n- `sample_submission.csv`: An example file showing the required submission format, which includes `discourse_id` and a probability column for each of the 3 classes.",
     "link to the dataset":[
-      "first_5\\datasets\\predict_effective_arguments\\train.csv",
-      "first_5\\datasets\\predict_effective_arguments\\test.csv",
-      "first_5\\datasets\\predict_effective_arguments\\sample_submission.csv",
-      "first_5\\datasets\\predict_effective_arguments\\train",
-      "first_5\\datasets\\predict_effective_arguments\\test"
+      "/kaggle/input/jadon-sancho-datasets/Datasets/datasets/predict_effective_arguments/train.csv",
+      "/kaggle/input/jadon-sancho-datasets/Datasets/datasets/predict_effective_arguments/test.csv",
+      "/kaggle/input/jadon-sancho-datasets/Datasets/datasets/predict_effective_arguments/sample_submission.csv",
+      "/kaggle/input/jadon-sancho-datasets/Datasets/datasets/predict_effective_arguments/train",
+      "/kaggle/input/jadon-sancho-datasets/Datasets/datasets/predict_effective_arguments/test"
     ]
   }
 ]
