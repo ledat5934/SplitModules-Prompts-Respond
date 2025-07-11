@@ -182,7 +182,8 @@ If you see a numeric column 'income' with 25% missing values and a skewed distri
 Before generating the final JSON, think step-by-step:
 1. First, carefully identify the target variable and the task type (classification/regression).
 2. Second, review each variable. What are its type, statistics, and potential issues?
-3. Third, based on the data properties and the examples above, decide on the most appropriate, specific actions for each module.
+3. Third, based on the data properties and the examples above, decide on the most appropriate, specific ML or DL algorithm for this task.
+4. Forth, think the suitable preprocessing for the algorithm.
 4. Consider using pretrained model for NLP or CV tasks if necessary.
 5. If use pretrained model, choose most appropriate models for the task.
 6. With text data, consider between pretrained model and BOW, TF-IDF, ... base on task description.
