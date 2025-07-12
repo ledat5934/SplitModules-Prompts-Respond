@@ -7,7 +7,7 @@ from datetime import datetime
 from dotenv import load_dotenv
 import re # Import regex để sửa lỗi JSON
 
-# 🔧 LOAD .ENV FILE
+# LOAD .ENV FILE
 load_dotenv()
 
 def count_tokens_gemini(text: str) -> int:
@@ -176,7 +176,8 @@ Your response must be guided by the following principles. Refer to these example
 **JUSTIFY YOUR CHOICES INTERNALLY**: Even though the final JSON doesn't have a reason for every single step, your internal reasoning process must be sound. Base your choices on the data's properties (type, statistics, alerts).
 
 **IT'S OKAY TO OMIT**: If a step is not necessary (e.g., feature selection for a dataset with very few features), provide an empty list [] or null for that key in the JSON output.
-
+**CONSIDER FEATURE SCALING FOR LARGE NUMERIC VALUES**:  
+If any numerical feature (including the target variable) has a very large mean or standard deviation (e.g., >10,000), consider applying scaling such as StandardScaler or MinMaxScaler.
 ## High-Quality Examples
 
 **Example 1: Feature Engineering for a DateTime column**
@@ -238,7 +239,7 @@ Please provide your response in JSON format. It is acceptable to provide an empt
     }}
 }}"""
 
-    # 🔧 FIX: Chỉ return prompt trực tiếp, không dùng .format() nữa
+    #  FIX: Chỉ return prompt trực tiếp, không dùng .format() nữa
     # Vì f-string đã thay thế tất cả variables rồi
     return prompt
 
