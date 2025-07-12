@@ -178,6 +178,7 @@ Your response must be guided by the following principles. Refer to these example
 **IT'S OKAY TO OMIT**: If a step is not necessary (e.g., feature selection for a dataset with very few features), provide an empty list [] or null for that key in the JSON output.
 **CONSIDER FEATURE SCALING FOR LARGE NUMERIC VALUES**:  
 If any numerical feature (including the target variable) has a very large mean or standard deviation (e.g., >10,000), consider applying scaling such as StandardScaler or MinMaxScaler.
+Scale the numerical target if it has very large mean and then rescale when predicts.
 ## High-Quality Examples
 
 **Example 1: Feature Engineering for a DateTime column**
