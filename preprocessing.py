@@ -24,7 +24,7 @@ class PreprocessingGenerator:
         
         genai.configure(api_key=api_key)
         self.model = genai.GenerativeModel(
-            model_name="gemini-2.5-flash",
+            model_name="gemini-2.0-flash",
             generation_config={
                 "temperature": 0,  # Lower temperature for more consistent code
                 "top_p": 0.95,
