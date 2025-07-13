@@ -22,7 +22,7 @@ class ModelingGenerator:
             raise ValueError('GEMINI_API_KEY not found in environment variables')
         genai.configure(api_key=api_key)
         self.model = genai.GenerativeModel(
-            model_name="gemini-2.0-flash",
+            model_name="gemini-2.5-flash",
             generation_config={
                 "temperature": 0,  # Lower temperature for more consistent code
                 "top_p": 0.95,
