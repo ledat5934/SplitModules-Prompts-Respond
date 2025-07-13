@@ -117,10 +117,6 @@
       "state_labels.csv": "Helper CSV file that maps the State IDs to their respective human-readable names.",
       "train_images/": "Directory containing image files for each pet in the training set.",
       "test_images/": "Directory containing image files for each pet in the test set.",
-      "train_metadata/": "Directory containing JSON files with image metadata for the training set.",
-      "test_metadata/": "Directory containing JSON files with image metadata for the test set.",
-      "train_sentiment/": "Directory containing JSON files with sentiment analysis data for the training set.",
-      "test_sentiment/": "Directory containing JSON files with sentiment analysis data for the test set.",
       "sample_submission.csv": "An example file showing the required submission format, which includes an `PetID` column and a `AdoptionSpeed` column."
     },
     "link to the dataset": [
@@ -129,10 +125,6 @@
       "/kaggle/input/jadon-sancho-datasets/Datasets/datasets/pet_finder/test/sample_submission.csv",
       "/kaggle/input/jadon-sancho-datasets/Datasets/datasets/pet_finder/train_images",
       "/kaggle/input/jadon-sancho-datasets/Datasets/datasets/pet_finder/test_images",
-      "/kaggle/input/jadon-sancho-datasets/Datasets/datasets/pet_finder/train_metadata",
-      "/kaggle/input/jadon-sancho-datasets/Datasets/datasets/pet_finder/test_metadata",
-      "/kaggle/input/jadon-sancho-datasets/Datasets/datasets/pet_finder/train_sentiment",
-      "/kaggle/input/jadon-sancho-datasets/Datasets/datasets/pet_finder/test_sentiment",
       "/kaggle/input/jadon-sancho-datasets/Datasets/datasets/pet_finder/breed_labels.csv",
       "/kaggle/input/jadon-sancho-datasets/Datasets/datasets/pet_finder/color_labels.csv",
       "/kaggle/input/jadon-sancho-datasets/Datasets/datasets/pet_finder/state_labels.csv"
