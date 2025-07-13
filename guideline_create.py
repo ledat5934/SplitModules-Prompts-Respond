@@ -265,7 +265,7 @@ def call_gemini_for_guideline(prompt: str, model: str = "gemini-2.5-flash") -> t
             generation_config={
                 "temperature": 0, # Giảm nhiệt độ để có kết quả nhất quán hơn
                 "top_p": 0.95, "top_k": 40,
-                "max_output_tokens": 8000,
+                "max_output_tokens": 16000,
                 "response_mime_type": "application/json", # Yêu cầu Gemini trả về JSON
             }
         )

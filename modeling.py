@@ -27,7 +27,7 @@ class ModelingGenerator:
                 "temperature": 0,  # Lower temperature for more consistent code
                 "top_p": 0.95,
                 "top_k": 40,
-                "max_output_tokens": 16000,
+                "max_output_tokens": 30000,
             }
         )
         print('Gemini API setup complete')
