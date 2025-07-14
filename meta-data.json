@@ -156,7 +156,7 @@
     "output_data": "The output is a single categorical label that identifies the condition of the paddy leaf. There are 10 possible classes: nine different disease categories and one 'normal' category for a healthy leaf.",
     "task": "For each given image in test_images/, develop a model to accurately classify the paddy leaf into one of the ten possible classes (nine diseases or normal). This is a multi-class classification problem. Predict the class for each paddy leaf in the test dataset and output the result in submission.csv which have the same format but not the same number of rows as sample_submission.csv",
     "data file description": {
-      "train.csv": "The main training metadata file. It contains the columns `image_id`, `label` (the target class), `variety`, and `age`.",
+      "train.csv": "The main training metadata file. It contains the columns `image_id`, `label` (the target class), `variety`, and `age`.(Note that the image_id contain .jpg)",
       "train_images/": "A directory containing 10,407 training images. The filenames correspond to the `image_id` in `train.csv`.",
       "test_images/": "A directory containing 3,469 test images for which predictions are required.",
       "sample_submission.csv": "An example file showing the required submission format, which includes `image_id` and `label`."
