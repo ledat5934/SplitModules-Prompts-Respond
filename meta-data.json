@@ -162,10 +162,10 @@
       "sample_submission.csv": "An example file showing the required submission format, which includes `image_id` and `label`."
     },
     "link to the dataset":[
-      "/kaggle/input/jadon-sancho-datasets/Datasets/datasets/paddy_disease_classification/train.csv",
-      "/kaggle/input/jadon-sancho-datasets/Datasets/datasets/paddy_disease_classification/train_images",
-      "/kaggle/input/jadon-sancho-datasets/Datasets/datasets/paddy_disease_classification/test_images",
-      "/kaggle/input/jadon-sancho-datasets/Datasets/datasets/paddy_disease_classification/sample_submission.csv"
+      "/kaggle/input/paddy-disease/paddy_disease_classification/train_images",
+      "/kaggle/input/paddy-disease/paddy_disease_classification/train_images",
+      "/kaggle/input/paddy-disease/paddy_disease_classification/test_images",
+      "/kaggle/input/paddy-disease/paddy_disease_classification/sample_submission.csv"
     ]
   },
   {
