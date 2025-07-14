@@ -159,13 +159,15 @@
       "train.csv": "The main training metadata file. It contains the columns `image_id`, `label` (the target class), `variety`, and `age`.(Note that the image_id contain .jpg)",
       "train_images/": "A directory containing 10,407 training images. The filenames correspond to the `image_id` in `train.csv`.",
       "test_images/": "A directory containing 3,469 test images for which predictions are required.",
-      "sample_submission.csv": "An example file showing the required submission format, which includes `image_id` and `label`."
+      "sample_submission.csv": "An example file showing the required submission format, which includes `image_id` and `label`.",
+	  "test.csv": "Test file contains the image_id to predict and label which are you need to predict"
     },
     "link to the dataset":[
-      "/kaggle/input/paddy-disease/paddy_disease_classification/train_images",
-      "/kaggle/input/paddy-disease/paddy_disease_classification/train_images",
-      "/kaggle/input/paddy-disease/paddy_disease_classification/test_images",
-      "/kaggle/input/paddy-disease/paddy_disease_classification/sample_submission.csv"
+      "/kaggle/input/paddy-disease-classification/paddy_disease_classification/train.csv",
+      "/kaggle/input/paddy-disease-classification/paddy_disease_classification/test.csv",
+      "/kaggle/input/paddy-disease-classification/paddy_disease_classification/train_images",
+      "/kaggle/input/paddy-disease-classification/paddy_disease_classification/test_images",
+	  "/kaggle/input/paddy-disease-classification/paddy_disease_classification/sample_submission.csv"
     ]
   },
   {
