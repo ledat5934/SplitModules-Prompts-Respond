@@ -157,6 +157,93 @@ def create_enhanced_guideline_prompt(guideline_input: Dict) -> str:
 - **Dataset**: {dataset_name}
 - **Task**: {task_desc}
 - **Size**: {n_rows:,} rows, {n_cols} columns
+- **Data File Description**: {data_file_description}
+
+
+## Variables Analysis Summary:
+```json
+```
+
+## Guideline Generation Principles & Examples
+Your response must be guided by the following principles. Refer to these examples to understand the expected level of detail.
+
+**BE SPECIFIC AND ACTIONABLE**: Your recommendations must be concrete actions.
+-  Bad (Generic): "Handle missing values"
+-  Good (Specific): "Impute 'Age' with the median"
+
+**JUSTIFY YOUR CHOICES INTERNALLY**: Even though the final JSON doesn't have a reason for every single step, your internal reasoning process must be sound. Base your choices on the data's properties (type, statistics, alerts).
+
+**IT'S OKAY TO OMIT**: If a step is not necessary (e.g., feature selection for a dataset with very few features), provide an empty list [] or null for that key in the JSON output.
+**CONSIDER FEATURE SCALING FOR LARGE NUMERIC VALUES**:  
+If any numerical feature (including the target variable) has a very large mean or standard deviation (e.g., >10,000), consider applying scaling such as StandardScaler or MinMaxScaler.
+Scale the numerical target if it has very large mean and then rescale when predicts.
+## High-Quality Examples
+
+**Example 1: Feature Engineering for a DateTime column**
+If you see a DateTime column like 'transaction_date', a good feature_engineering list would be ["Extract 'month' from 'transaction_date'", "Extract 'day_of_week' from 'transaction_date'"].
+
+**Example 2: Handling High Cardinality Categorical Data**
+If a categorical column 'product_id' has over 100 unique values, a good feature_engineering recommendation would be ["Apply frequency encoding to 'product_id'"] instead of one-hot encoding to avoid a memory explosion.
+
+**Example 3: Handling Missing Numerical Data**
+If you see a numeric column 'income' with 25% missing values and a skewed distribution, a good missing_values recommendation would be ["Impute 'income' with its median"].
+
+## Required Thinking Process (Do not output this part)
+Before generating the final JSON, think step-by-step:
+1. First, carefully identify the target variable and the task type (classification/regression).
+2. Second, review each variable. What are its type, statistics, and potential issues?
+3. Third, based on the data properties and the examples above, decide on the most appropriate, specific ML or DL algorithm for this task.
+4. Forth, think the suitable preprocessing for the algorithm(Example: If use pretrained model for NLP tasks, feature engineering should not have 'generate embedding' step).
+4. Consider using pretrained model for NLP or CV tasks if necessary.
+5. If use pretrained model, choose most appropriate models for the task.
+6. With text data, consider between pretrained model or BOW, TF-IDF, ... base on task.
+7. Finally, compile these specific actions into the required JSON format below.
+
+## Output Format: Your response must be the JSON format below:
+Please provide your response in JSON format. It is acceptable to provide an empty list or null for recommendations if none are suitable.
+
+**IMPORTANT**: Ensure the generated JSON is perfectly valid.
+- All strings must be enclosed in double quotes.
+- All backslashes inside strings must be properly escaped (e.g., "C:\\\\path" not "C:\\path").
+- There should be no unescaped newline characters within a string value.
+- Do not add trailing commas.
+- Do not include comments (// or #) within the JSON output.
+
+{{
+    "target_identification": {{
+        "target_variable": "identified_target_column_name",
+        "reasoning": "explanation for target selection",
+        "task_type": "classification/regression/etc"
+    }},
+    "modeling": {{
+        "recommended_algorithms": ["algorithm"],
+        "explanation": "explanation for the recommended algorithms",
+        "model_selection": [model_name1, model_name2](description: name of the pretrained model if using, if not using, leave it blank),
+        "model_selection_reasoning": "explanation for the model selection",
+        "output_file_structure": {{"submission.csv": "submission file for the test dataset, contain n Columns:[...], have the same columns but not the same rows with sample_submission.csv"}}
+    }},
+    "preprocessing": {{
+        "data_cleaning": ["specific step 1", "specific step 2"],
+        "feature_engineering": ["specific technique 1", "specific technique 2"],
+        "explanation": "explanation for the feature engineering",
+        "missing_values": ["strategy 1", "strategy 2"],
+        "feature_selection": ["method 1", "method 2"],
+        "data_splitting": {{"train": 0.8, "val": 0.2, "strategy": "stratified"}}
+    }},
+    "evaluation": {{
+        "metrics": ["metric 1", "metric 2"],
+        "validation_strategy": ["approach 1", "approach 2"],
+        "performance_benchmarking": ["baseline 1", "baseline 2"],
+        "result_interpretation": ["interpretation 1", "interpretation 2"]
+    }}
+}}"""
+
+
+    old_prompt = f"""You are an expert Machine Learning architect. Your task is to analyze the provided dataset information and create a specific, actionable, and justified guideline for an AutoML pipeline.
+## Dataset Information:
+- **Dataset**: {dataset_name}
+- **Task**: {task_desc}
+- **Size**: {n_rows:,} rows, {n_cols} columns
 - **Key Quality Alerts**: {alerts[:3] if alerts else 'None'}
 - **Data File Description**: {data_file_description}
 
@@ -240,8 +327,6 @@ Please provide your response in JSON format. It is acceptable to provide an empt
     }}
 }}"""
 
-    #  FIX: Chỉ return prompt trực tiếp, không dùng .format() nữa
-    # Vì f-string đã thay thế tất cả variables rồi
     return prompt
 
 # --- END: PROMPT ĐÃ ĐƯỢC CẬP NHẬT ---
