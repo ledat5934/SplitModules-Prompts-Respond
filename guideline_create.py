@@ -144,9 +144,11 @@ def create_enhanced_guideline_prompt(guideline_input: Dict) -> str:
     # Lấy n_rows và n_cols từ summary đã chọn
     n_rows = sample_summary.get('n_rows', 0)
     n_cols = sample_summary.get('n_cols', 0)
-
-    
-    sample_profile = list(profiles.values())[0] if profiles else {}
+    sample_profile = {}
+    if profiles:
+        sample_profile = next(
+        (profile for filename, profile in profiles.items() if 'train' in filename.lower()),
+    )
     alerts = sample_profile.get('alerts', [])
     variables = sample_profile.get('variables', {})
     
