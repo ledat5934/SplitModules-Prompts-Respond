@@ -25,9 +25,9 @@
     "task": "The objective is to build a model that can classify the domain of a paper based on its title.Predict the domain of the paper in the test dataset and output the result in submission.csv which have the same format but not the same number of rows as sample_submission.csv",
     "data file description": "`train.csv`: Contains the training data. Each row represents a paper and includes its `Title` and `Domain`, `train.csv` is the training dataset, `test.csv` is the test dataset, `sample_submission.csv` is the sample submission file",
     "link to the dataset": [
-      "\\Datasets\\datasets\\query_domain_classification\\train.csv",
-      "\\Datasets\\datasets\\query_domain_classification/test.csv",
-      "\\Datasets\\datasets\\query_domain_classification/sample_submission.csv"
+      "/kaggle/input/jadon-sancho-datasets/Datasets/datasets/query_domain_classification/train.csv",
+      "/kaggle/input/jadon-sancho-datasets/Datasets/datasets/query_domain_classification/test.csv",
+      "/kaggle/input/jadon-sancho-datasets/Datasets/datasets/query_domain_classification/Submission_file01.csv"
     ]
   },
   {
