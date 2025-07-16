@@ -329,7 +329,7 @@ Please provide your response in JSON format. It is acceptable to provide an empt
     }}
 }}"""
 
-    return old_prompt
+    return prompt
 
 # --- END: PROMPT ĐÃ ĐƯỢC CẬP NHẬT ---
 
