@@ -72,20 +72,20 @@
     "output_data": "The output consists of 6 continuous numerical values. Each value is a prediction for one of the 6 vital plant traits , representing properties like leaf area or plant height.",
     "task": "For each sample, predict the values for all 6 plant traits based on the plant image and its associated ancillary data. This is a multi-output regression task that requires a multi-modal model to handle both image and tabular inputs. Predict the values for all 6 plant traits based on the plant image and its associated ancillary data in the test dataset and output the result in submission.csv which have the same format but not the same number of rows as sample_submission.csv",
     "data file description": {
-		"train.csv": "Contains the training data. For each `id`, it includes the target values for the 6 plant traits (columns named `X[*]_mean`) and all the ancillary tabular data (columns like `WORLDCLIM_BIO[*]`, `SOIL_[*]`, etc.)",
-		"train_images/": "A directory containing the training images, with filenames corresponding to the `id` in `train.csv`",
-		"target_name_meta.tsv": "A helper file providing the full names and descriptions for each trait ID.",
-		"test.csv": "Contains the ancillary tabular data for the test set. It does not contain the target trait values.",
-		"test_images/": "A directory containing the test images.",
-		"sample_submission.csv": "An example file showing the required submission format, which includes an `id` column and a prediction column for each of the 6 traits."
+		  "train.csv": "Contains the training data. For each `id`, it includes the target values for the 6 plant traits (columns named `X[*]_mean`) and all the ancillary tabular data (columns like `WORLDCLIM_BIO[*]`, `SOIL_[*]`, etc.)",
+		  "train_images/": "A directory containing the training images, with filenames corresponding to the `id` in `train.csv`",
+		  "target_name_meta.tsv": "A helper file providing the full names and descriptions for each trait ID.",
+		  "test.csv": "Contains the ancillary tabular data for the test set. It does not contain the target trait values.",
+		  "test_images/": "A directory containing the test images.",
+		  "sample_submission.csv": "An example file showing the required submission format, which includes an `id` column and a prediction column for each of the 6 traits."
 	},
     "link to the dataset": [
-      "/kaggle/input/jadon-sancho-datasets/Datasets/datasets/plant_traits_2024/train.csv",
-      "/kaggle/input/jadon-sancho-datasets/Datasets/datasets/plant_traits_2024/train_images",
-      "/kaggle/input/jadon-sancho-datasets/Datasets/datasets/plant_traits_2024/target_name_meta.tsv",
-	    "/kaggle/input/jadon-sancho-datasets/Datasets/datasets/plant_traits_2024/test.csv",
-	    "/kaggle/input/jadon-sancho-datasets/Datasets/datasets/plant_traits_2024/test_images",
-	    "/kaggle/input/jadon-sancho-datasets/Datasets/datasets/plant_traits_2024/sample_submission.csv"
+      "/kaggle/input/jadon-sancho-datasets/Datasets/datasets/PlantTraits2024/train.csv",
+      "/kaggle/input/jadon-sancho-datasets/Datasets/datasets/PlantTraits2024/train_images",
+      "/kaggle/input/jadon-sancho-datasets/Datasets/datasets/PlantTraits2024/target_name_meta.tsv",
+	    "/kaggle/input/jadon-sancho-datasets/Datasets/datasets/PlantTraits2024/test.csv",
+	    "/kaggle/input/jadon-sancho-datasets/Datasets/datasets/PlantTraits2024/test_images",
+	    "/kaggle/input/jadon-sancho-datasets/Datasets/datasets/PlantTraits2024/sample_submission.csv"
     ]
   },
   {
