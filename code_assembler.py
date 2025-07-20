@@ -76,6 +76,7 @@ class CodeAssembler:
             "a `main()` function and call it.\n"
             "3. Remove duplicate functions/classes (keep first version).\n"
             "4. Do NOT alter behaviour.\n"
+            "5. The output code should run in the train set, not the sample or dummy data.\n"
             "Output ONLY plain Python source (no markdown)."
         )
 
@@ -100,7 +101,7 @@ class CodeAssembler:
         self,
         project_name: str,
         stage_files: List[Path],
-        output_root: Path = Path("assembled_output"),
+        output_root: Path = Path("generated_code"),
     ) -> None:
         """Concatenate *stage_files* and write outputs under *output_root*."""
         if not stage_files:
@@ -142,7 +143,7 @@ if __name__ == "__main__":
     )
     parser.add_argument("project_name", help="Base name for output files (without extension)")
     parser.add_argument("scripts", nargs="+", type=Path, help="Stage *.py files in desired order")
-    parser.add_argument("--out", default="assembled_output", help="Output directory")
+    parser.add_argument("--out", default="generated_code", help="Output directory")
     args = parser.parse_args()
 
     assembler = CodeAssembler()

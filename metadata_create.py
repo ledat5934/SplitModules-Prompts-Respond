@@ -2,260 +2,198 @@ import argparse
 import json
 import os
 import sys
+import time
+from collections import OrderedDict
 from pathlib import Path
 from typing import Dict, List
 
 import google.generativeai as genai
 from dotenv import load_dotenv
 
-# >>> NEW: dùng DataAnalyzer để quét đệ quy
-from data_analyzer import DataAnalyzer, ProjectInfo
-# <<< NEW
+# optional project helpers ------------------------------------------------
+try:
+    from data_analyzer import DataAnalyzer  # để dùng ở chế độ --recursive
+except Exception:
+    DataAnalyzer = None  # type: ignore
 
-import time
+load_dotenv()
 MAX_RETRY = 3
 
-load_dotenv()  # load GEMINI_API_KEY
+# ------------------------------------------------------------------ utils
+SUPPORTED_EXTS = {
+    ".csv", ".tsv", ".txt", ".json", ".jsonl",
+    ".xlsx", ".xls", ".parquet",
+    ".jpg", ".jpeg", ".png", ".bmp"
+}
 
+
+# ----------------------------------------------------------
+# BỎ QUA (SKIP) description.txt khi build lookup
+# ----------------------------------------------------------
+DESC_HASH = "description.txt"      # ‘hashcode’ nhận diện – thực ra là tên file
+
+def _build_lookup(root: Path) -> Dict[str, Path]:
+    lookup: Dict[str, Path] = {}
+    for p in root.rglob("*"):
+        # 1) bỏ qua description.txt
+        if p.is_file() and p.name.lower() == DESC_HASH:
+            continue
+        # 2) (tùy chọn) bỏ file ẩn bắt đầu bằng dấu chấm
+        if p.name.startswith("."):
+            continue
+
+        if p.is_file():
+            lookup[p.name.lower()] = p.resolve()
+        elif p.is_dir():
+            try:
+                if any(f.is_file() and f.suffix.lower() in SUPPORTED_EXTS
+                       for f in p.iterdir()):
+                    lookup[p.name.lower()] = p.resolve()
+            except PermissionError:
+                pass
+    return lookup
+
+
+def _map_paths(llm_json: Dict, lookup: Dict[str, Path]) -> Dict[str, str]:
+    """
+    Với mỗi key trong 'data file description' (dict) → gán absolute path.
+    Chỉ những key tìm thấy mới được giữ lại.
+    """
+    result: OrderedDict[str, str] = OrderedDict()
+    dfd = llm_json.get("data file description", {})
+    if not isinstance(dfd, dict):
+        return result
+
+    for key in dfd.keys():
+        base = key.strip().split("/")[-1].lower()
+        if base in lookup:
+            result[key] = str(lookup[base])
+    return result
+
+
+# ------------------------------------------------------------------ gemini
 def setup_gemini() -> genai.GenerativeModel:
     api_key = os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY")
     if not api_key:
-        sys.exit("  GEMINI_API_KEY / GOOGLE_API_KEY chưa thiết lập trong .env")
+        sys.exit("GEMINI_API_KEY / GOOGLE_API_KEY chưa thiết lập trong .env")
     genai.configure(api_key=api_key)
     return genai.GenerativeModel(
         model_name="gemini-2.5-flash",
-        generation_config={
-            "temperature": 0,
-            "max_output_tokens": 4096,
-        },
+        generation_config={"temperature": 0, "max_output_tokens": 4096},
     )
 
+
 def call_gemini(model: genai.GenerativeModel, prompt: str, retries: int = MAX_RETRY) -> str | None:
-    """
-    Gọi Gemini và trả về text; thử lại tối đa *retries* lần.
-    Trả về None nếu mọi lần đều thất bại hoặc resp.text trống.
-    """
-    for attempt in range(1, retries + 1):
+    for i in range(1, retries + 1):
         try:
             resp = model.generate_content(
-                prompt,
-                generation_config={"response_mime_type": "application/json"},
+                prompt, generation_config={"response_mime_type": "application/json"}
             )
             if resp.text and resp.text.strip():
                 return resp.text
-            print(f"  ⚠ Empty response from Gemini (attempt {attempt}/{retries})")
         except Exception as e:
-            print(f"  Gemini request failed (attempt {attempt}/{retries}): {e}")
-        if attempt < retries:
+            print(f"Gemini failed ({i}/{retries}): {e}")
+        if i < retries:
             time.sleep(1)
     return None
 
-def safe_json_load(txt: str | None):
-    """
-    Parse JSON hoặc trả về None nếu không thể.
-    """
-    if not txt:
-        return None
-    txt = txt.strip()
-    if txt.startswith("```"):
-        txt = txt.split("```")[1] if "```" in txt else txt
+
+def safe_json_load(raw: str | None) -> Dict:
+    if not raw:
+        return {}
+    raw = raw.strip()
+    if raw.startswith("```"):
+        raw = raw.split("```")[1] if "```" in raw else raw
     try:
-        return json.loads(txt)
-    except json.JSONDecodeError as e:
-        print(f"  JSON parse error, trying quick fix: {e}")
-        # quick-n-dirty fixes
-        txt = txt.replace("\t", " ").replace("\r", "")
-        txt = txt.strip().rstrip(",")  # trailing comma
+        return json.loads(raw)
+    except json.JSONDecodeError:
+        # quick repair
+        raw = raw.replace("\t", " ").replace("\r", "").strip().rstrip(",")
         try:
-            return json.loads(txt)
+            return json.loads(raw)
         except Exception:
-            return None
+            return {}
 
-def scan_files(root: Path) -> Dict[str, str]:
-    mapping = {}
-    # 1) liệt kê file
-    for p in root.rglob("*"):
-        if p.is_file():
-            rel = p.relative_to(root).as_posix()
-            mapping[rel] = str(p.resolve())
 
-    # 2) liệt kê thư mục “có ý nghĩa” (chứa ≥1 file hỗ trợ)
-    supported = {".csv", ".tsv", ".txt", ".json", ".jsonl",
-                 ".xlsx", ".xls", ".parquet", ".jpg", ".png"}
-    for d in root.rglob("*"):
-        if d.is_dir() and any(f.suffix.lower() in supported for f in d.iterdir()):
-            rel = d.relative_to(root).as_posix()
-            mapping.setdefault(rel + "/", str(d.resolve()))
-    return mapping
-
+# ------------------------------------------------------------------ entry
 META_SCHEMA_KEYS = {
     "id", "name", "task", "input_data", "output_data",
     "data file description", "link to the dataset", "files"
 }
 
-# ---------- NEW  helper -------------------------------------------------
-import re
-SUPPORTED_EXTS = (
-    ".csv .tsv .txt .json .jsonl .xlsx .xls .parquet .zip"
-).split()
 
+def build_entry(llm_json: Dict, lookup: Dict[str, Path], new_id: int) -> Dict:
+    files_map = _map_paths(llm_json, lookup)
 
-def _filter_files_by_description(
-    files_map: Dict[str, str],
-    description_text: str,
-    gemini_json: Dict | None,
-) -> Dict[str, str]:
-    """
-    Giữ lại chỉ những path mà tên file (basename) xuất hiện trong
-    description.txt hoặc trong gemini_json['data file description'].
-    Nếu không tìm thấy path nào khớp → trả về files_map gốc.
-    """
-    ref_text = description_text.lower()
+    # fallback nếu không match gì → lấy ≤20 path đầu tiên
+    if not files_map:
+        files_map = {k: str(v) for k, v in list(lookup.items())[:20]}
 
-    # 1) Bổ sung chuỗi từ khóa 'data file description' của Gemini (nếu có)
-    if gemini_json:
-        dfd = gemini_json.get("data file description")
-        if isinstance(dfd, str):
-            ref_text += " " + dfd.lower()
-        elif isinstance(dfd, dict):
-            ref_text += " " + " ".join(
-                f"{k} {v}" for k, v in dfd.items()
-            ).lower()
-
-    # 2) Trích xuất tên file trong ref_text theo pattern *.ext
-    mentioned: set[str] = set(
-        re.findall(
-            r"([\w\-.]+(?:"
-            + "|".join(re.escape(ext) for ext in SUPPORTED_EXTS)
-            + r"))",
-            ref_text,
-        )
-    )
-
-    # 3) Lọc
-    filtered = {
-        rel: abs_path
-        for rel, abs_path in files_map.items()
-        if Path(rel).name.lower() in mentioned
-    }
-
-    # Nếu Gemini/description không chứa file cụ thể → trả về nguyên danh sách
-    return filtered or files_map
-# ------------------------------------------------------------------------
-
-
-def build_entry(
-    gemini_json: Dict,
-                files_map: Dict[str, str],
-    new_id: int,
-    description_text: str,
-) -> Dict:
-    """
-    Ghép kết quả Gemini + danh sách file *đã lọc* thành 1 entry chuẩn schema.
-    """
-    # --- FILTER --------------------------------------------------------
-    files_map = _filter_files_by_description(files_map, description_text, gemini_json)
-
-    entry = {
+    entry: Dict = {
         "id": new_id,
-             "link to the dataset": list(files_map.values()),
+        "link to the dataset": list(files_map.values()),
         "files": files_map,
     }
-
-    # copy các trường do Gemini sinh hợp lệ với schema
-    for k, v in gemini_json.items():
-        if k in META_SCHEMA_KEYS:
-            entry[k] = v
-
-    # Giới hạn 'data file description' theo file đã lọc (nếu Gemini trả dict)
-    if isinstance(entry.get("data file description"), dict):
-        dfd = entry["data file description"]
-        keep_keys = {
-            k for k in dfd.keys() if any(name in k for name in mentioned)
-        }
-        entry["data file description"] = {k: dfd[k] for k in keep_keys}
-
+    for k in META_SCHEMA_KEYS:
+        if k in llm_json:
+            entry[k] = llm_json[k]
     entry.setdefault("name", f"dataset_{new_id}")
     return entry
-# ----------------- (hết helper) ----------------------------------------
-
-# >>> NEW: tiện ích chuyển ProjectInfo -> files_map
-def _files_map_from_project(proj: ProjectInfo) -> Dict[str, str]:
-    """
-    Convert ProjectInfo.data_files thành mapping {relative_path: absolute_path}
-    phù hợp với build_entry().
-    """
-    mapping: Dict[str, str] = {}
-    for lst in proj.data_files.values():
-        for p in lst:
-            rel = p.relative_to(proj.project_dir).as_posix()
-            mapping[rel] = str(p.resolve())
-    return mapping
-# <<< NEW
 
 
-def main():
+# ------------------------------------------------------------------ main
+def main() -> None:
     parser = argparse.ArgumentParser(
-        description="Append dataset info to meta-data.json (single folder OR recursive scan)."
+        description="Append dataset info to meta-data.json (single or recursive)."
     )
-    parser.add_argument(
-        "root_path",
-        help="Folder dataset (giống cách cũ) HOẶC thư mục gốc chứa nhiều project con.",
-    )
-    parser.add_argument("--meta", default="meta-data.json", help="File meta-data.json")
-    parser.add_argument(
-        "--recursive",
-        action="store_true",
-        help="Quét root_path đệ quy, tự động thêm tất cả project tìm thấy",
-    )
+    parser.add_argument("root", help="Dataset folder OR root containing many projects")
+    parser.add_argument("--meta", default="meta-data.json", help="meta-data.json file")
+    parser.add_argument("--recursive", action="store_true", help="Recursively scan")
     args = parser.parse_args()
 
-    root_path = Path(args.root_path).resolve()
+    root_path = Path(args.root).resolve()
     if not root_path.exists():
-        sys.exit(f"  Path not found: {root_path}")
+        sys.exit(f"Path not found: {root_path}")
 
-    # ------------------------------------------------------------------
-    #  Đọc (hoặc tạo mới) meta-data.json
-    # ------------------------------------------------------------------
     meta_path = Path(args.meta).resolve()
-    if meta_path.exists():
-        meta_data: List[Dict] = json.loads(meta_path.read_text(encoding="utf-8"))
-    else:
-        meta_data = []
+    meta_data: List[Dict] = (
+        json.loads(meta_path.read_text(encoding="utf-8")) if meta_path.exists() else []
+    )
+    next_id = (
+        max(int(it["id"]) for it in meta_data if str(it.get("id", "")).isdigit()) + 1
+        if meta_data else 1
+    )
 
-    # Sử dụng chung biến đếm id cho cả hai chế độ
-    existing_ids = [
-        int(item["id"]) for item in meta_data if str(item.get("id", "")).isdigit()
-    ]
-    next_id = (max(existing_ids) if existing_ids else 0) + 1
+    model = setup_gemini()
 
-    # ------------------------------------------------------------------
-    #  CHẾ ĐỘ RECURSIVE
-    # ------------------------------------------------------------------
+    # ---------- recursive mode ---------------------------------------
     if args.recursive:
+        if not DataAnalyzer:
+            sys.exit("DataAnalyzer module not available for --recursive mode.")
+
         analyzer = DataAnalyzer()
         projects = analyzer.analyze(root_path)
         if not projects:
-            sys.exit("  Không tìm thấy description.txt nào trong cây thư mục.")
-
-        model = setup_gemini()  # tạo 1 model dùng chung
+            sys.exit("No description.txt found under root.")
 
         for proj in projects:
-            description_text = proj.desc_path.read_text(encoding="utf-8")
-            files_map = _files_map_from_project(proj)
+            print(f"\n Processing project '{proj.name}'")
+            lookup = _build_lookup(proj.project_dir)
 
-            # Chỉ gửi 50 tên path đầu tiên để hạn chế token
-            file_list_snippet = "\n".join(list(files_map.keys())[:50])
+            file_list_snippet = "\n".join(list(lookup.keys())[:50])
+            description_text = proj.desc_path.read_text(encoding="utf-8")
             prompt = f"""
 You are a data-set analyst. From the FREE-TEXT description and the partial
-file list below, create a JSON object that follows EXACTLY this schema:
+file/folder list below, create a JSON object EXACTLY in this schema:
 
 {{
   "name": str,
   "task": str,
   "input_data": str,
   "output_data": str,
-  "data file description": str
+  "data file description": {{
+     "<file_or_folder_name>": "description"
+  }}
 }}
 
 Return ONLY valid JSON (no markdown).
@@ -263,58 +201,44 @@ Return ONLY valid JSON (no markdown).
 --- description.txt ---
 {description_text}
 
---- example file list ({len(files_map)} files, first 50) ---
+--- example list ({len(lookup)} items, first 50) ---
 {file_list_snippet}
 """
-            gemini_raw = call_gemini(model, prompt)
-            gemini_json = safe_json_load(gemini_raw)
+            llm_raw = call_gemini(model, prompt)
+            llm_json = safe_json_load(llm_raw)
+            entry = build_entry(llm_json, lookup, next_id)
+            meta_data.append(entry)
+            print(f"   Added id={next_id}")
+            next_id += 1
 
-            if gemini_json:
-                meta_entry = build_entry(gemini_json, files_map, next_id, description_text)
-                meta_data.append(meta_entry)
-                print(f"   Added project '{proj.name}' (id={next_id})")
-            else:
-                print("   Gemini failed → creating MINIMAL entry")
-                gemini_json = {"name": proj.name, "task": "", "input_data": "",
-                               "output_data": "", "data file description": ""}
-                meta_entry = build_entry(gemini_json, files_map, next_id, description_text)
-                meta_data.append(meta_entry)
-                print(f"   Added minimal project entry for '{proj.name}' (id={next_id})")
-
-            next_id += 1  # tăng ID cho project kế tiếp
-
-        # Ghi ra file sau khi xử lý tất cả
-        meta_path.write_text(
-            json.dumps(meta_data, indent=2, ensure_ascii=False), encoding="utf-8"
-        )
-        print(f"  meta-data.json updated – total {len(meta_data)} entries")
+        # write once
+        meta_path.write_text(json.dumps(meta_data, indent=2, ensure_ascii=False), encoding="utf-8")
+        print(f"\n meta-data.json updated to {meta_path}")
         return
 
-    # ------------------------------------------------------------------
-    #  CHẾ ĐỘ CŨ – Xử lý 1 folder dataset
-    # ------------------------------------------------------------------
+    # ---------- single-folder mode ----------------------------------
     if not root_path.is_dir():
-        sys.exit(f" Folder not found: {root_path}")
+        sys.exit("Given root is not a directory (single-folder mode).")
 
+    lookup = _build_lookup(root_path)
+    file_list_snippet = "\n".join(list(lookup.keys())[:50])
     desc_file = root_path / "description.txt"
     if not desc_file.exists():
-        sys.exit("  description.txt không tồn tại trong folder dataset.")
+        sys.exit("description.txt not found in dataset folder")
 
     description_text = desc_file.read_text(encoding="utf-8")
-    files_map = scan_files(root_path)
-
-    model = setup_gemini()
-    file_list_snippet = "\n".join(list(files_map.keys())[:50])
     prompt = f"""
 You are a data-set analyst. From the FREE-TEXT description and the partial
-file list below, create a JSON object that follows EXACTLY this schema:
+file/folder list below, create a JSON object EXACTLY in this schema:
 
 {{
   "name": str,
   "task": str,
   "input_data": str,
   "output_data": str,
-  "data file description": str           
+  "data file description": {{
+     "<file_or_folder_name>": "description"
+  }}
 }}
 
 Return ONLY valid JSON (no markdown).
@@ -322,21 +246,16 @@ Return ONLY valid JSON (no markdown).
 --- description.txt ---
 {description_text}
 
---- example file list ({len(files_map)} files, first 50) ---
+--- example list ({len(lookup)} items, first 50) ---
 {file_list_snippet}
 """
-    gemini_raw = call_gemini(model, prompt)
-    gemini_json = safe_json_load(gemini_raw)
+    llm_raw = call_gemini(model, prompt)
+    llm_json = safe_json_load(llm_raw)
+    entry = build_entry(llm_json, lookup, next_id)
+    meta_data.append(entry)
 
-    if gemini_json:
-        meta_entry = build_entry(gemini_json, files_map, next_id, description_text)
-        meta_data.append(meta_entry)
-        print(f"  Added dataset id={next_id} to {meta_path}")
-    else:
-        print(f" Could not parse Gemini response for dataset. Falling back to minimal entry.")
-        meta_entry = {"id": next_id, "name": f"dataset_{next_id}", "files": files_map}
-    meta_data.append(meta_entry)
-    print(f"  Added minimal dataset entry to {meta_path}")
+    meta_path.write_text(json.dumps(meta_data, indent=2, ensure_ascii=False), encoding="utf-8")
+    print(f"\n Added dataset id={next_id} to {meta_path}")
 
 
 if __name__ == "__main__":
