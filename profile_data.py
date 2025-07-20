@@ -27,7 +27,11 @@ def check_paths(paths: List[str]) -> Dict:
 
 import json
 
+# -------------------- (2)  Extra-light JSON filter --------------------
 def filter_value_counts(profile_json_str: str) -> str:
+    """
+    Remove heavy per-category statistics to keep file size small.
+    """
     try:
         profile_dict = json.loads(profile_json_str)
     except json.JSONDecodeError as e:
@@ -35,46 +39,72 @@ def filter_value_counts(profile_json_str: str) -> str:
         return profile_json_str
 
     if "variables" not in profile_dict:
-        print("  ⚠️ Không tìm thấy phần 'variables'")
         return profile_json_str
 
-    for var_name, var_info in profile_dict["variables"].items():
-        var_type = var_info.get("type", "")
-        n_unique = var_info.get("n_unique", 0)
+    HEAVY_KEYS = {
+        "value_counts_without_nan", "value_counts_with_nan",
+        "value_counts_index_sorted",
+        "histogram", "histogram_length", "length_histogram",
+        "block_alias_char_counts", "block_alias_values",
+        "script_char_counts", "script_counts",
+        "category_alias_char_counts", "category_alias_values",
+        "category_alias_counts",
+        "character_counts",
+        "extreme_values",
+        "value_counts_without_nan",
+        "value_counts_index_sorted",
+        "histogram",
+        "length_histogram",
+        "histogram_length",
+        "block_alias_char_counts",
+        "word_counts",
+        "category_alias_char_counts",
+        "script_char_counts",
+        "block_alias_values",
+        "category_alias_values",
+        "character_counts",
+        "block_alias_counts",
+        "script_counts",
+        "category_alias_counts",
+        "n_block_alias",
+        "n_scripts",
+        "n_category",
+    }
 
-        # Nếu là kiểu văn bản hoặc có quá nhiều giá trị rời rạc → xoá các phần nặng
-        should_remove = (
-            var_type in ["Text", "Numeric", "Date", "DateTime", "Time", "URL", "Path"]
-            or (var_type == "Categorical" and n_unique > 50)
-        )
-
-        if should_remove:
-            keys_to_remove = [
-                "value_counts_without_nan",
-                "value_counts_index_sorted",
-                "histogram",
-                "length_histogram",
-                "histogram_length",
-                "block_alias_char_counts",
-                "word_counts",
-                "category_alias_char_counts",
-                "script_char_counts",
-                "block_alias_values",
-                "category_alias_values",
-                "character_counts",
-                "block_alias_counts",
-                "script_counts",
-                "category_alias_counts",
-                "n_block_alias",
-                "n_scripts",
-                "n_category",
-            ]
-
-            for key in keys_to_remove:
-                var_info.pop(key, None)
+    for var_info in profile_dict["variables"].values():
+        for k in HEAVY_KEYS:
+            var_info.pop(k, None)
 
     return json.dumps(profile_dict, ensure_ascii=False, indent=2)
 
+
+# -------------------- (4)  Image profiling helper --------------------
+def image_profile(image_paths: List[Path]) -> Dict:
+    """
+    Very lightweight statistics for image folders – no pixel data loaded.
+    """
+    from PIL import Image
+
+    widths, heights = [], []
+    for p in image_paths[:20]:          # inspect first 20 images only
+        try:
+            with Image.open(p) as im:
+                w, h = im.size
+                widths.append(w)
+                heights.append(h)
+        except Exception:
+            pass  # skip unreadable
+
+    if not widths:
+        return {}
+
+    return {
+        "image_count": len(image_paths),
+        "avg_width": round(sum(widths) / len(widths), 1),
+        "avg_height": round(sum(heights) / len(heights), 1),
+        "min_width": min(widths), "max_width": max(widths),
+        "min_height": min(heights), "max_height": max(heights),
+    }
 
 
 def csv_profile(csv_path: Path, out_dir: Path) -> Dict:
@@ -86,7 +116,7 @@ def csv_profile(csv_path: Path, out_dir: Path) -> Dict:
         title=f"Profile - {csv_path.name}",
         minimal=True,
         samples={
-            "random": 5
+            "random": 0
         },
         correlations={
             "auto": {"calculate": False},
@@ -160,10 +190,24 @@ def run_profiling(meta_file: str = "meta-data.json", output_root="profiling_resu
 
         struct_stat = check_paths(paths_list)
         csv_summaries = []
+        image_stats = {}
+
+        # ----- NEW: classify file types once -----
+        image_extensions = {".jpg", ".jpeg", ".png", ".bmp", ".gif", ".tiff", ".webp"}
+        image_files = [Path(p) for p in paths_list if Path(p).suffix.lower() in image_extensions and Path(p).exists()]
 
         for p in paths_list:
             if p.lower().endswith(".csv") and Path(p).exists():
                 csv_summaries.append(csv_profile(Path(p), ds_out))
+
+        # ----- NEW: image profiling -----
+        if image_files:
+            print(f"  Found {len(image_files)} image files → quick profiling")
+            image_stats = image_profile(image_files)
+            (ds_out / "image_summary.json").write_text(
+                json.dumps(image_stats, indent=2, ensure_ascii=False),
+                encoding="utf-8"
+            )
 
         overview = {
             "dataset_id": ds_id,
@@ -171,6 +215,7 @@ def run_profiling(meta_file: str = "meta-data.json", output_root="profiling_resu
             "task": ds.get("task"),
             "structure": struct_stat,
             "csv_profiles": csv_summaries,
+            "image_profile": image_stats or None
         }
 
         (ds_out / "data_profile.json").write_text(

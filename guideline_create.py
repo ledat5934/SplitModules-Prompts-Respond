@@ -114,7 +114,33 @@ def create_variables_summary(variables: Dict) -> Dict:
         if var_info.get("type") == "Categorical" and var_info.get("imbalance", 0) > 0.95:
             summary_stats["data_issues"]["highly_imbalanced_features"].append({"name": var_name, "imbalance": round(var_info.get("imbalance", 0), 3)})
             
-    return {"summary_stats": summary_stats, "variables_by_type": var_types}
+    # --------------------------------------------------------------
+    # NEW: keep only TOP-10 variables globally (most “important”)
+    # Importance = high missing_pct  ➜  high n_distinct
+    # --------------------------------------------------------------
+    def _importance(v):
+        # negative because we sorted ascending earlier
+        return (-v["missing_pct"], -v.get("n_distinct", 0))
+
+    all_vars = [v for vars_list in var_types.values() for v in vars_list]
+    top_vars = sorted(all_vars, key=_importance)[:10]
+
+    # rebuild mapping by type with only those top variables
+    trimmed_types = {k: [] for k in var_types}
+    for v in top_vars:
+        t = v["type"]
+        if t == "Numeric":
+            trimmed_types["numerical"].append(v)
+        elif t == "Categorical":
+            trimmed_types["categorical"].append(v)
+        elif t == "Text":
+            trimmed_types["text"].append(v)
+        elif t in ("DateTime", "Date", "Time"):
+            trimmed_types["datetime"].append(v)
+        else:
+            trimmed_types["other"].append(v)
+
+    return {"summary_stats": summary_stats, "variables_by_type": trimmed_types}
 
 
 # --- START: PROMPT ĐÃ ĐƯỢC CẬP NHẬT ---
@@ -379,6 +405,17 @@ def generate_guidelines_for_dataset(guideline_input: Dict, output_dir: Path) -> 
     print(f" Generating guidelines for: {dataset_name}")
     
     prompt = create_enhanced_guideline_prompt(guideline_input)
+
+    # --------------------------------------------------------------
+    # NEW: lưu prompt ra file txt để tiện kiểm tra
+    # --------------------------------------------------------------
+    safe_name = dataset_name.replace(" ", "_").replace("/", "_")
+    prompt_dir = output_dir / "prompts"
+    prompt_dir.mkdir(exist_ok=True)
+    prompt_file = prompt_dir / f"{dataset_id}_{safe_name}_prompt.txt"
+    prompt_file.write_text(prompt, encoding="utf-8")
+    print(f"  Prompt saved to: {prompt_file}")      # an toàn cho mọi đường dẫn
+
     gemini_response, input_tokens, output_tokens = call_gemini_for_guideline(prompt)
     
     print(f"  Token Usage: Input: {input_tokens:,}, Output: {output_tokens:,}, Total: {input_tokens + output_tokens:,}")
