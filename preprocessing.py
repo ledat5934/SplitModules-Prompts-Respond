@@ -104,6 +104,11 @@ Generate complete and executable Python preprocessing code for the dataset below
 10. Preprocessing both the train and test data.
 11. Test the execution on the real data or parts of it(if the dataset is large), not the dummy data.
 12. **Critical Error Handling**: The main execution block (`if __name__ == "__main__":`) MUST be wrapped in a try...except block. If ANY exception occurs during the process, the script MUST print the error and then **exit with a non-zero status code** using `sys.exit(1)`.
+13. During the quick self-test in the `if __name__ == "__main__":` block,
+    read AT MOST 100 rows from every large CSV via `pd.read_csv(..., nrows=100)`
+    (or `.sample(n=100)` after loading).  
+    The `preprocess_data()` function itself MUST work on the full dataset
+    when called by outside code.
 ## CODE STRUCTURE:
 #import necessary libraries
 

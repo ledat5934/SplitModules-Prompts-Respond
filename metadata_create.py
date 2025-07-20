@@ -73,10 +73,19 @@ def safe_json_load(txt: str | None):
 
 def scan_files(root: Path) -> Dict[str, str]:
     mapping = {}
+    # 1) liệt kê file
     for p in root.rglob("*"):
         if p.is_file():
             rel = p.relative_to(root).as_posix()
             mapping[rel] = str(p.resolve())
+
+    # 2) liệt kê thư mục “có ý nghĩa” (chứa ≥1 file hỗ trợ)
+    supported = {".csv", ".tsv", ".txt", ".json", ".jsonl",
+                 ".xlsx", ".xls", ".parquet", ".jpg", ".png"}
+    for d in root.rglob("*"):
+        if d.is_dir() and any(f.suffix.lower() in supported for f in d.iterdir()):
+            rel = d.relative_to(root).as_posix()
+            mapping.setdefault(rel + "/", str(d.resolve()))
     return mapping
 
 META_SCHEMA_KEYS = {
