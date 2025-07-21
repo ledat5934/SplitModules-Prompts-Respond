@@ -104,7 +104,6 @@ Requirements:
 10. With deep learning model, try to use GPU and use appropriate pretrained model if possible.
 11. When fine tunning pretrained model, use a big number of epochs with early stopping = 1.
 12. The code should executable in Kaggle with GPU P100.
-13. The __main__ block should run self-test.
 ##Code format:
 #import necessary libraries
 # Include preprocessing code
