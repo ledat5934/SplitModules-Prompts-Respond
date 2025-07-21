@@ -2,18 +2,18 @@
   {
     "id": 1,
     "link to the dataset": [
-      "/kaggle/input/my-dataset5934-3/predict_effective_arguments/predict_effective_arguments/sample_submission.csv",
-      "/kaggle/input/my-dataset5934-3/predict_effective_arguments/predict_effective_arguments/test",
-      "/kaggle/input/my-dataset5934-3/predict_effective_arguments/predict_effective_arguments/test.csv",
-      "/kaggle/input/my-dataset5934-3/predict_effective_arguments/predict_effective_arguments/train",
-      "/kaggle/input/my-dataset5934-3/predict_effective_arguments/predict_effective_arguments/train.csv"
+      "/kaggle/input/my-dataset5934-3/predict_effective_arguments/sample_submission.csv",
+      "/kaggle/input/my-dataset5934-3/predict_effective_arguments/test",
+      "/kaggle/input/my-dataset5934-3/predict_effective_arguments/test.csv",
+      "/kaggle/input/my-dataset5934-3/predict_effective_arguments/train",
+      "/kaggle/input/my-dataset5934-3/predict_effective_arguments/train.csv"
     ],
     "files": {
-      "sample_submission.csv": "/kaggle/input/my-dataset5934-3/predict_effective_arguments/predict_effective_arguments/sample_submission.csv",
-      "test": "/kaggle/input/my-dataset5934-3/predict_effective_arguments/predict_effective_arguments/test",
-      "test.csv": "/kaggle/input/my-dataset5934-3/predict_effective_arguments/predict_effective_arguments/test.csv",
-      "train": "/kaggle/input/my-dataset5934-3/predict_effective_arguments/predict_effective_arguments/train",
-      "train.csv": "/kaggle/input/my-dataset5934-3/predict_effective_arguments/predict_effective_arguments/train.csv"
+      "sample_submission.csv": "/kaggle/input/my-dataset5934-3/predict_effective_arguments/sample_submission.csv",
+      "test": "/kaggle/input/my-dataset5934-3/predict_effective_arguments/test",
+      "test.csv": "/kaggle/input/my-dataset5934-3/predict_effective_arguments/test.csv",
+      "train": "/kaggle/input/my-dataset5934-3/predict_effective_arguments/train",
+      "train.csv": "/kaggle/input/my-dataset5934-3/predict_effective_arguments/train.csv"
     },
     "name": "Feedback Prize 2.0 - Classifying Argumentative Elements",
     "task": "Multi-class classification of argumentative elements in student writing into 'effective', 'adequate', or 'ineffective' categories.",
