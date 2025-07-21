@@ -171,7 +171,6 @@
   {
     "id": 7,
     "link to the dataset": [
-      "/kaggle/input/my-dataset5934-3/dog_breed_classification/dog_breed_classification.zip",
       "/kaggle/input/my-dataset5934-3/dog_breed_classification/kaggle/working/custom_competition_data",
       "/kaggle/input/my-dataset5934-3/dog_breed_classification/kaggle/working/custom_competition_data/labels.csv",
       "/kaggle/input/my-dataset5934-3/dog_breed_classification/kaggle/working/custom_competition_data/sample_submission.csv",
@@ -179,7 +178,6 @@
       "/kaggle/input/my-dataset5934-3/dog_breed_classification/kaggle/working/custom_competition_data/train"
     ],
     "files": {
-      "dog_breed_classification.zip": "/kaggle/input/my-dataset5934-3/dog_breed_classification/dog_breed_classification.zip",
       "custom_competition_data": "/kaggle/input/my-dataset5934-3/dog_breed_classification/kaggle/working/custom_competition_data",
       "labels.csv": "/kaggle/input/my-dataset5934-3/dog_breed_classification/kaggle/working/custom_competition_data/labels.csv",
       "sample_submission.csv": "/kaggle/input/my-dataset5934-3/dog_breed_classification/kaggle/working/custom_competition_data/sample_submission.csv",
@@ -188,7 +186,6 @@
     },
     "output_data": "The output should be a CSV file with a header, containing the unique ID for each image in the test set, followed by predicted probabilities for each of the 120 dog breeds. The submission is evaluated on Multi Class Log Loss.",
     "data file description": {
-      "dog_breed_classification.zip": "The main compressed archive containing all competition data.",
       "custom_competition_data": "The root directory containing the competition datasets.",
       "labels.csv": "A CSV file containing the unique IDs and corresponding breed labels for the images in the training set.",
       "sample_submission.csv": "A sample submission file demonstrating the correct format, including image IDs and placeholder probabilities for each breed.",
