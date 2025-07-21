@@ -109,6 +109,7 @@ Generate complete and executable Python preprocessing code for the dataset below
     (or `.sample(n=100)` after loading).  
     The `preprocess_data()` function itself MUST work on the full dataset
     when called by outside code.
+14. The code should executable in Kaggle with 2 GPU T4.
 ## CODE STRUCTURE:
 #import necessary libraries
 
