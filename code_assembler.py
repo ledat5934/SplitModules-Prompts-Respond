@@ -1,28 +1,14 @@
-"""
-code_assembler.py
------------------
-Merge several stage scripts into one cleaned *.py* file and a companion
-*.ipynb* notebook.
-
-Usage (CLI)
------------
-python code_assembler.py my_project \
-        generated_code/preprocessing_dataset_1.py \
-        generated_code/modeling_dataset_1.py \
-        --out combined
-
-This creates:
-    combined/
-        my_project.py        # AI-cleaned unified script
-        my_project.ipynb     # notebook with original cells
-"""
-
 from __future__ import annotations
 
 from pathlib import Path
 from typing import List
 
-import nbformat as nbf
+import nbformat as nbf # Vẫn cần import này nếu không muốn xóa hoàn toàn nó, hoặc có thể xóa nếu không sử dụng gì nữa.
+
+# Thêm các import mới
+import google.generativeai as genai
+import os
+from dotenv import load_dotenv # Đảm bảo bạn đã cài đặt: pip install python-dotenv
 
 # ----------------------------------------------------------------------
 # Optional project utilities.  Fall back to lightweight stubs if missing.
@@ -38,14 +24,25 @@ except Exception:  # pragma: no cover
     )
     get_logger = logging.getLogger  # type: ignore
 
-try:
-    from src.utils.env_config import load_config  # type: ignore
-    from src.utils.gemini_client import GeminiClient  # type: ignore
-except Exception:  # pragma: no cover
-    load_config = None
-    GeminiClient = None  # type: ignore
-
 logger = get_logger(__name__)
+
+# --- Hàm loại bỏ ký tự code block ---
+def remove_code_block_markers(text: str) -> str:
+    """
+    Removes Markdown code block markers (```python and ```) from a string.
+
+    Args:
+        text (str): The input string potentially containing code block markers.
+
+    Returns:
+        str: The string with code block markers removed.
+    """
+    # Loại bỏ '```python' trước để tránh làm hỏng '```' đơn thuần
+    text = text.replace("```python", "")
+    # Loại bỏ '```'
+    text = text.replace("```", "")
+    return text
+# --- Kết thúc hàm loại bỏ ký tự code block ---
 
 
 class CodeAssembler:
@@ -62,8 +59,23 @@ class CodeAssembler:
 
         If Gemini SDK or keys are absent, returns *code* unchanged.
         """
-        if not (load_config and GeminiClient):
-            logger.warning("Gemini utilities unavailable → skipping AI cleaning.")
+        # Tải biến môi trường từ tệp .env
+        load_dotenv()
+        GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+
+        if not GEMINI_API_KEY:
+            logger.warning("GEMINI_API_KEY not found in environment variables or .env file → skipping AI cleaning.")
+            return code
+
+        # Cấu hình API key cho thư viện google.generativeai
+        genai.configure(api_key=GEMINI_API_KEY)
+
+        try:
+            # Khởi tạo model Gemini 2.0 Flash
+            model = genai.GenerativeModel('gemini-2.0-flash')
+
+        except Exception as e:
+            logger.error(f"Failed to load Gemini model 'gemini-2.0-flash': {e} → skipping AI cleaning.")
             return code
 
         system_prompt = (
@@ -81,17 +93,23 @@ class CodeAssembler:
         )
 
         try:
-            cfg = load_config()
-            client = GeminiClient(cfg)
-            messages = [
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": f"Here is the script:\n\n{code}"},
-            ]
-            cleaned = client.chat_completion(messages=messages)
+            response = model.generate_content(
+                contents=[
+                    {"role": "user", "parts": [system_prompt]},
+                    {"role": "user", "parts": [f"Here is the script:\n\n{code}"]},
+                ],
+            )
+            
+            cleaned_raw_text = response.text
+            cleaned_code = remove_code_block_markers(cleaned_raw_text)
+
             logger.info("AI cleaning finished.")
-            return cleaned
+            return cleaned_code
+        except genai.types.BlockedPromptException as e:
+            logger.error(f"Gemini cleaning failed due to safety settings: {e}. Using un-cleaned code.", exc_info=True)
+            return code
         except Exception as exc:  # pragma: no cover
-            logger.error("Gemini cleaning failed (%s). Using un-cleaned code.", exc)
+            logger.error("Gemini cleaning failed (%s). Using un-cleaned code.", exc, exc_info=True)
             return code
 
     # ------------------------------------------------------------------
@@ -109,11 +127,11 @@ class CodeAssembler:
 
         output_root.mkdir(parents=True, exist_ok=True)
         py_file = output_root / f"{project_name}.py"
-        nb_file = output_root / f"{project_name}.ipynb"
+        # nb_file = output_root / f"{project_name}.ipynb" # Dòng này đã được comment/xóa
 
         logger.info(
-            "Assembling %d files → %s  &  %s",
-            len(stage_files), py_file, nb_file
+            "Assembling %d files → %s", # Đã bỏ '%s' thứ hai và đối số nb_file
+            len(stage_files), py_file # Đã bỏ nb_file khỏi log
         )
 
         # -- read & concatenate ------------------------------------------------
@@ -126,10 +144,11 @@ class CodeAssembler:
         logger.info("Wrote cleaned script: %s", py_file)
 
         # -- notebook with original cells -------------------------------------
-        nb = nbf.v4.new_notebook()
-        nb.cells.extend(nbf.v4.new_code_cell(s) for s in snippets)
-        nbf.write(nb, str(nb_file))
-        logger.info("Wrote notebook:      %s", nb_file)
+        # Các dòng này đã được comment/xóa để không tạo notebook
+        # nb = nbf.v4.new_notebook()
+        # nb.cells.extend(nbf.v4.new_code_cell(s) for s in snippets)
+        # nbf.write(nb, str(nb_file))
+        # logger.info("Wrote notebook:       %s", nb_file)
 
 
 # ----------------------------------------------------------------------
@@ -147,4 +166,4 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     assembler = CodeAssembler()
-    assembler.assemble(args.project_name, args.scripts, Path(args.out)) 
+    assembler.assemble(args.project_name, args.scripts, Path(args.out))
