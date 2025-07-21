@@ -103,7 +103,7 @@ Requirements:
 9. The submission.csv file may not have the same rows as the test.csv file, so you need to map the rows to the test.csv file.
 10. With deep learning model, try to use GPU and use appropriate pretrained model if possible.
 11. When fine tunning pretrained model, use a big number of epochs with early stopping = 1.
-12. The code should executable in Kaggle with GPU P100.
+12. The code should executable in Kaggle with GPU P100, 30GB Ram CPU and 16GB Ram GPU.
 ##Code format:
 #import necessary libraries
 # Include preprocessing code
