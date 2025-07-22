@@ -266,9 +266,9 @@
       "sample_submission.csv": "/kaggle/input/my-dataset5934-3/PlantTraits2024/sample_submission.csv"
     },
     "data file description": {
-      "train_images": "Folder containing JPEG images for training.",
+      "train_images": "Folder containing JPEG images for training, file name is the id in the train.csv",
       "train.csv": "CSV file with labels (target traits) and ancillary data (satellite, soil, climate) for each training image.",
-      "test_images": "Folder containing JPEG images for testing, used to create predictions for submission.",
+      "test_images": "Folder containing JPEG images for testing, used to create predictions for submission, file name is the id in the test.csv",
       "test.csv": "CSV file with ancillary data (satellite, soil, climate) for each test image.",
       "target_name_meta.tsv": "TSV file providing full names of the plant traits obtained from the TRY database.",
       "sample_submission.csv": "An example CSV file demonstrating the correct format for submission."
