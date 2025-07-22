@@ -104,6 +104,7 @@ Requirements:
 10. With deep learning model, try to use GPU and use appropriate pretrained model if possible.
 11. When fine tunning pretrained model, use a big number of epochs with early stopping = 1.
 12. The code should executable in Kaggle with GPU P100, 30GB Ram CPU and 16GB Ram GPU.
+13. When doing Deep Learning task, consider using lazy loading to reduce memory usage.
 ##Code format:
 #import necessary libraries
 # Include preprocessing code
