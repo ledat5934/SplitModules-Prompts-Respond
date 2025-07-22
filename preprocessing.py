@@ -110,6 +110,7 @@ Generate complete and executable Python preprocessing code for the dataset below
     The `preprocess_data()` function itself MUST work on the full dataset
     when called by outside code.
 14. The code should executable in Kaggle with GPU P100, 30GB Ram CPU and 16GB Ram GPU.
+15. When doing Deep Learning task, consider using lazy loading to reduce memory usage.
 ## CODE STRUCTURE:
 #import necessary libraries
 
