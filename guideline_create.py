@@ -267,7 +267,7 @@ Please provide your response in JSON format. It is acceptable to provide an empt
         "explanation": "explanation for the feature engineering",
         "missing_values": ["strategy 1", "strategy 2"],
         "feature_selection": ["method 1", "method 2"],
-        "data_splitting": {{"train": 0.8, "val": 0.2, "strategy": "stratified"}}
+        "data_splitting": {{"train": 0.8, "val": 0.2}}
     }},
     "evaluation": {{
         "metrics": ["metric 1", "metric 2"],
