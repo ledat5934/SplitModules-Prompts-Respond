@@ -60,15 +60,25 @@ def create_variables_summary(variables: Dict) -> Dict:
     """
     if not variables:
         return {}
-    
+    MAX_TEXT_LENGTH = 50
     var_types = {"numerical": [], "categorical": [], "text": [], "datetime": [], "other": []}
     
     for var_name, var_info in variables.items():
         var_type = var_info.get("type", "")
+        
+        # --- THAY ĐỔI BẮT ĐẦU TỪ ĐÂY ---
+        first_row_value = var_info.get("first_rows", {}).get("0", "N/A")
+        display_row = first_row_value 
+        if var_type == "Text":
+            first_row_str = str(first_row_value)
+            if len(first_row_str) > MAX_TEXT_LENGTH:
+                display_row = first_row_str[:MAX_TEXT_LENGTH] + "..."
+        
         var_summary = {
             "name": var_name, "type": var_type,
             "missing_pct": round(var_info.get("p_missing", 0), 3),
-            "n_distinct": var_info.get("n_distinct", 0)
+            "n_distinct": var_info.get("n_distinct", 0),
+            "first_row": display_row 
         }
         
         if var_type == "Categorical":
