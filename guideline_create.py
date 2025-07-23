@@ -272,7 +272,7 @@ def call_openai_for_guideline(prompt: str, model: str = "gpt-4o-mini") -> tuple[
             messages=[
             {"role": "user", "content": prompt}
             ],
-            temperature=0.1, # Giảm nhiệt độ để có kết quả nhất quán
+            temperature=0, # Giảm nhiệt độ để có kết quả nhất quán
             top_p=0.95,
             max_tokens=4096, # gpt-4o-mini có context window lớn, nhưng giới hạn output để tiết kiệm
             response_format={"type": "json_object"} # Yêu cầu OpenAI trả về JSON
