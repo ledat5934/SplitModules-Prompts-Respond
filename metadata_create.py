@@ -7,7 +7,7 @@ from collections import OrderedDict
 from pathlib import Path
 from typing import Dict, List
 
-import google.generativeai as genai
+from openai import OpenAI
 from dotenv import load_dotenv
 
 # optional project helpers ------------------------------------------------
@@ -72,30 +72,34 @@ def _map_paths(llm_json: Dict, lookup: Dict[str, Path]) -> Dict[str, str]:
 
 
 # ------------------------------------------------------------------ gemini
-def setup_gemini() -> genai.GenerativeModel:
-    api_key = os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY")
+def setup_openai() -> OpenAI: # THAY ĐỔI: Hàm setup
+    """Khởi tạo và trả về client OpenAI."""
+    api_key = os.getenv("OPENAI_API_KEY")
     if not api_key:
-        sys.exit("GEMINI_API_KEY / GOOGLE_API_KEY chưa thiết lập trong .env")
-    genai.configure(api_key=api_key)
-    return genai.GenerativeModel(
-        model_name="gemini-2.5-flash",
-        generation_config={"temperature": 0, "max_output_tokens": 4096},
-    )
+        sys.exit("OPENAI_API_KEY chưa thiết lập trong .env")
+    return OpenAI(api_key=api_key)
 
 
-def call_gemini(model: genai.GenerativeModel, prompt: str, retries: int = MAX_RETRY) -> str | None:
+def call_openai(client: OpenAI, model_name: str, prompt: str, retries: int = MAX_RETRY) -> str | None: # THAY ĐỔI: Hàm gọi API
+    """Gọi API OpenAI với cơ chế thử lại."""
     for i in range(1, retries + 1):
         try:
-            resp = model.generate_content(
-                prompt, generation_config={"response_mime_type": "application/json"}
+            response = client.chat.completions.create(
+                model=model_name,
+                messages=[{"role": "user", "content": prompt}],
+                response_format={"type": "json_object"}, # Yêu cầu trả về JSON
+                temperature=0.0,
+                max_tokens=4096,
             )
-            if resp.text and resp.text.strip():
-                return resp.text
+            content = response.choices[0].message.content
+            if content and content.strip():
+                return content
         except Exception as e:
-            print(f"Gemini failed ({i}/{retries}): {e}")
+            print(f"OpenAI failed ({i}/{retries}): {e}")
         if i < retries:
             time.sleep(1)
     return None
+
 
 
 def safe_json_load(raw: str | None) -> Dict:
@@ -163,9 +167,33 @@ def main() -> None:
         max(int(it["id"]) for it in meta_data if str(it.get("id", "")).isdigit()) + 1
         if meta_data else 1
     )
+    
+    # THAY ĐỔI: Khởi tạo client và model name cho OpenAI
+    client = setup_openai()
+    model_name = "gpt-4o-mini"
+    
+    prompt_template = """
+You are a data-set analyst. From the FREE-TEXT description and the partial
+file/folder list below, create a JSON object EXACTLY in this schema:
 
-    model = setup_gemini()
+{{
+  "name": "str",
+  "task": "str",
+  "input_data": "str(description of the input data)",
+  "output_data": "str(description of the output data(probality, label, ...))",
+  "data file description": {{
+    "<file_or_folder_name>": "description"
+  }}
+}}
 
+Return ONLY a valid JSON object.
+
+--- description.txt ---
+{description_text}
+
+--- example list ({num_items} items, first 50) ---
+{file_list_snippet}
+"""
     # ---------- recursive mode ---------------------------------------
     if args.recursive:
         if not DataAnalyzer:
@@ -182,36 +210,21 @@ def main() -> None:
 
             file_list_snippet = "\n".join(list(lookup.keys())[:50])
             description_text = proj.desc_path.read_text(encoding="utf-8")
-            prompt = f"""
-You are a data-set analyst. From the FREE-TEXT description and the partial
-file/folder list below, create a JSON object EXACTLY in this schema:
-
-{{
-  "name": str,
-  "task": str,
-  "input_data": str,
-  "output_data": str,
-  "data file description": {{
-     "<file_or_folder_name>": "description"
-  }}
-}}
-
-Return ONLY valid JSON (no markdown).
-
---- description.txt ---
-{description_text}
-
---- example list ({len(lookup)} items, first 50) ---
-{file_list_snippet}
-"""
-            llm_raw = call_gemini(model, prompt)
+            
+            prompt = prompt_template.format(
+                description_text=description_text,
+                num_items=len(lookup),
+                file_list_snippet=file_list_snippet
+            )
+            
+            # THAY ĐỔI: Gọi hàm của OpenAI
+            llm_raw = call_openai(client, model_name, prompt)
             llm_json = safe_json_load(llm_raw)
             entry = build_entry(llm_json, lookup, next_id)
             meta_data.append(entry)
             print(f"   Added id={next_id}")
             next_id += 1
 
-        # write once
         meta_path.write_text(json.dumps(meta_data, indent=2, ensure_ascii=False), encoding="utf-8")
         print(f"\n meta-data.json updated to {meta_path}")
         return
@@ -227,29 +240,15 @@ Return ONLY valid JSON (no markdown).
         sys.exit("description.txt not found in dataset folder")
 
     description_text = desc_file.read_text(encoding="utf-8")
-    prompt = f"""
-You are a data-set analyst. From the FREE-TEXT description and the partial
-file/folder list below, create a JSON object EXACTLY in this schema:
-
-{{
-  "name": str,
-  "task": str,
-  "input_data": str,
-  "output_data": str,
-  "data file description": {{
-     "<file_or_folder_name>": "description"
-  }}
-}}
-
-Return ONLY valid JSON (no markdown).
-
---- description.txt ---
-{description_text}
-
---- example list ({len(lookup)} items, first 50) ---
-{file_list_snippet}
-"""
-    llm_raw = call_gemini(model, prompt)
+    
+    prompt = prompt_template.format(
+        description_text=description_text,
+        num_items=len(lookup),
+        file_list_snippet=file_list_snippet
+    )
+    
+    # THAY ĐỔI: Gọi hàm của OpenAI
+    llm_raw = call_openai(client, model_name, prompt)
     llm_json = safe_json_load(llm_raw)
     entry = build_entry(llm_json, lookup, next_id)
     meta_data.append(entry)
