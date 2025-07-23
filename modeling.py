@@ -4,7 +4,7 @@ import traceback
 import subprocess
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
-import google.generativeai as genai
+from openai import OpenAI
 import os
 from datetime import datetime
 from dotenv import load_dotenv
@@ -15,22 +15,15 @@ load_dotenv()
 class ModelingGenerator:
     def __init__(self, max_retries: int = 5):
         self.max_retries = max_retries
-        self.setup_gemini()
-    def setup_gemini(self):
-        api_key = os.getenv('GEMINI_API_KEY') or os.getenv('GOOGLE_API_KEY')
+        self.model_name = "gpt-4o-mini" 
+        self.setup_openai()
+    def setup_openai(self):
+        api_key = os.getenv('OPENAI_API_KEY')
         if not api_key:
-            raise ValueError('GEMINI_API_KEY not found in environment variables')
-        genai.configure(api_key=api_key)
-        self.model = genai.GenerativeModel(
-            model_name="gemini-2.5-flash",
-            generation_config={
-                "temperature": 0,  # Lower temperature for more consistent code
-                "top_p": 0.95,
-                "top_k": 40,
-                "max_output_tokens": 30000,
-            }
-        )
-        print('Gemini API setup complete')
+            raise ValueError('OPENAI_API_KEY not found in environment variables')
+        
+        self.client = OpenAI(api_key=api_key)
+        print(f'OpenAI client setup complete for model: {self.model_name}')
     
     def load_guidelines_and_metadata(self, guideline_file: str,meta_data_file: str, dataset_id: str) -> Tuple[Dict, Dict]:
         print(f'Loading guidelines and metadata for {dataset_id}...')
@@ -151,17 +144,23 @@ Error message:
 
     def generate_modeling_code(self, prompt: str) -> str:
         """Generate modeling code using Gemini"""
-        print(" Generating modeling code...")
+        print(" Generating modeling code with OpenAI...")
         
         try:
-            response = self.model.generate_content(prompt)
-            code = response.text
+            response = self.client.chat.completions.create(
+                model=self.model_name,
+                messages=[{"role": "user", "content": prompt}],
+                temperature=0.0,
+                top_p=0.95,
+                max_tokens=16384,
+            )
+            code = response.choices[0].message.content
             
             # Extract Python code from response
             if "```python" in code:
                 code = code.split("```python")[1].split("```")[0].strip()
             elif "```" in code:
-                code = code.split("```")[1].split("```")[0].strip()
+                code = code.split("```")[1].strip()
             
             print(f" Generated {len(code)} characters of modeling code")
             return code
@@ -323,11 +322,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-
-
-
-
-
-        
-        
