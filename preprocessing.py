@@ -249,6 +249,7 @@ Error message:
                 
                 # Create prompt
                 prompt = self.create_preprocessing_prompt(guidelines, metadata, previous_code, error_message)
+                print(prompt)
                 
                 # Generate code
                 code = self.generate_preprocessing_code(prompt)
