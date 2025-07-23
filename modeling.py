@@ -123,10 +123,6 @@ Requirements:
 8. Use ensemble of models if necessary.
 9. Limit the comment in the code.
 10. **Critical Error Handling**: The main execution block (`if __name__ == "__main__":`) MUST be wrapped in a try...except block. If ANY exception occurs during the process, the script MUST print the error and then **exit with a non-zero status code** using `sys.exit(1)`.
-11. When you run a quick test/train loop inside `if __name__ == "__main__":`,
-    subsample the training data to ≤ 100 rows to keep execution fast.
-    The training / prediction functions must still accept the full
-    dataset size when this script is executed in production
 """
 
         # Add retry context if this is a retry
