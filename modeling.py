@@ -263,7 +263,7 @@ Error message:
                 
                 # Create prompt
                 prompt = self.create_modeling_prompt(guidelines, metadata, preprocessing_code, previous_code, error_message)
-                
+                print(prompt)
                 # Generate code
                 code = self.generate_modeling_code(prompt)
                 
