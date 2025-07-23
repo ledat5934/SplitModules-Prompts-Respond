@@ -22,5 +22,52 @@
     "output_data": "Predicted probabilities for each discourse element belonging to the effectiveness ratings: Ineffective, Adequate, Effective.",
     "task": "Classify argumentative elements in student writing",
     "name": "Argumentative Writing Classification"
+  },
+  {
+    "id": 2,
+    "link to the dataset": [
+      "/kaggle/input/my-dataset5934-3/toxic_cmt_classify/jigsaw-toxic-comment-train.csv",
+      "/kaggle/input/my-dataset5934-3/toxic_cmt_classify/jigsaw-unintended-bias-train.csv",
+      "/kaggle/input/my-dataset5934-3/toxic_cmt_classify/sample_submission.csv",
+      "/kaggle/input/my-dataset5934-3/toxic_cmt_classify/test.csv"
+    ],
+    "files": {
+      "jigsaw-toxic-comment-train.csv": "/kaggle/input/my-dataset5934-3/toxic_cmt_classify/jigsaw-toxic-comment-train.csv",
+      "jigsaw-unintended-bias-train.csv": "/kaggle/input/my-dataset5934-3/toxic_cmt_classify/jigsaw-unintended-bias-train.csv",
+      "sample_submission.csv": "/kaggle/input/my-dataset5934-3/toxic_cmt_classify/sample_submission.csv",
+      "test.csv": "/kaggle/input/my-dataset5934-3/toxic_cmt_classify/test.csv"
+    },
+    "data file description": {
+      "jigsaw-toxic-comment-train.csv": "Data from the first competition containing English comments from Wikipedia’s talk page edits.",
+      "jigsaw-unintended-bias-train.csv": "Data from the second competition, an expanded version of the Civil Comments dataset with additional labels.",
+      "sample_submission.csv": "A sample submission file in the correct format for predictions.",
+      "test.csv": "Comments from Wikipedia talk pages in different non-English languages."
+    },
+    "input_data": "The input data consists of English comments from previous competitions and non-English comments from Wikipedia talk pages.",
+    "task": "Build multilingual models to classify toxicity in online comments",
+    "output_data": "The output data is a probability score indicating the likelihood that a comment is toxic, with values ranging from 0.0 (non-toxic) to 1.0 (toxic).",
+    "name": "Toxic Comment Classification Challenge"
+  },
+  {
+    "id": 3,
+    "link to the dataset": [
+      "/kaggle/input/my-dataset5934-3/query_domain_classification/train.csv",
+      "/kaggle/input/my-dataset5934-3/query_domain_classification/test.csv",
+      "/kaggle/input/my-dataset5934-3/query_domain_classification/Submission_file01.csv"
+    ],
+    "files": {
+      "train.csv": "E:\\UET\\Lab\\AutoPipelineML\\SplitModules+Prompts+Respond\\Datasets\\datasets\\query_domain_classification\\train.csv",
+      "test.csv": "E:\\UET\\Lab\\AutoPipelineML\\SplitModules+Prompts+Respond\\Datasets\\datasets\\query_domain_classification\\test.csv",
+      "submission_file01.csv": "E:\\UET\\Lab\\AutoPipelineML\\SplitModules+Prompts+Respond\\Datasets\\datasets\\query_domain_classification\\Submission_file01.csv"
+    },
+    "data file description": {
+      "train.csv": "data to train the model, contains: ID, Title, Domain.",
+      "test.csv": "data to predict, contains: ID, Title.",
+      "submission_file01.csv": "sample submission with the correct format."
+    },
+    "name": "Query Domain Classification",
+    "output_data": "Predicted domain labels for the input queries.",
+    "input_data": "A collection of text sentences labeled with their corresponding query domains, compiled from various sources including web search logs and online forums.",
+    "task": "Multiclass Text Classification"
   }
 ]
