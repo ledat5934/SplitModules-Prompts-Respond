@@ -121,7 +121,7 @@ Requirements:
 
         # Add retry context if this is a retry
         if previous_code and error_message:
-            prompt += f"""
+            prompt = f"""
 ## PREVIOUS ATTEMPT FAILED:
 Previous code:
 ```python
