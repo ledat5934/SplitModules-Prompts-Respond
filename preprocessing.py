@@ -96,7 +96,7 @@ Generate complete and executable Python preprocessing code for the dataset below
 11. Test the execution on the real data or parts of it(if the dataset is large), not the dummy data.
 12. **Critical Error Handling**: The main execution block (`if __name__ == "__main__":`) MUST be wrapped in a try...except block. If ANY exception occurs during the process, the script MUST print the error and then **exit with a non-zero status code** using `sys.exit(1)`.
 13. The code should executable in Kaggle with GPU P100, 30GB Ram CPU and 16GB Ram GPU.
-14. IMPORTANT: When doing Deep Learning task, using lazy loading to reduce memory usage.
+14. IMPORTANT: using lazy loading to reduce memory usage.
 15. Any caught exception must be printed to the standard error stream (stderr), not to the standard output (stdout).
 ## CODE STRUCTURE:
 #import necessary libraries
