@@ -27,19 +27,16 @@
     "id": 2,
     "link to the dataset": [
       "/kaggle/input/my-dataset5934-3/toxic_cmt_classify/jigsaw-toxic-comment-train.csv",
-      "/kaggle/input/my-dataset5934-3/toxic_cmt_classify/jigsaw-unintended-bias-train.csv",
       "/kaggle/input/my-dataset5934-3/toxic_cmt_classify/sample_submission.csv",
       "/kaggle/input/my-dataset5934-3/toxic_cmt_classify/test.csv"
     ],
     "files": {
       "jigsaw-toxic-comment-train.csv": "/kaggle/input/my-dataset5934-3/toxic_cmt_classify/jigsaw-toxic-comment-train.csv",
-      "jigsaw-unintended-bias-train.csv": "/kaggle/input/my-dataset5934-3/toxic_cmt_classify/jigsaw-unintended-bias-train.csv",
       "sample_submission.csv": "/kaggle/input/my-dataset5934-3/toxic_cmt_classify/sample_submission.csv",
       "test.csv": "/kaggle/input/my-dataset5934-3/toxic_cmt_classify/test.csv"
     },
     "data file description": {
       "jigsaw-toxic-comment-train.csv": "Data from the first competition containing English comments from Wikipedia’s talk page edits.",
-      "jigsaw-unintended-bias-train.csv": "Data from the second competition, an expanded version of the Civil Comments dataset with additional labels.",
       "sample_submission.csv": "A sample submission file in the correct format for predictions.",
       "test.csv": "Comments from Wikipedia talk pages in different non-English languages."
     },
