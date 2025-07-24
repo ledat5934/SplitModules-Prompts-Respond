@@ -191,7 +191,7 @@ Good (Specific): "Impute 'Age' with the median"
 JUSTIFY YOUR CHOICES INTERNALLY: Even though the final JSON doesn't have a reason for every single step, your internal reasoning process must be sound. Base your choices on the data's properties (type, statistics, alerts).
 IT'S OKAY TO OMIT: If a step is not necessary, provide an empty list [] or null for that key in the JSON output.
 CONSIDER FEATURE SCALING FOR LARGE NUMERIC VALUES: If any numerical feature has a very large mean or standard deviation (e.g., >10,000), consider applying scaling such as StandardScaler or MinMaxScaler. Scale the numerical target if it has a very large mean and then rescale when predicts.
-
+IMPORTANT: When doing Deep Learning task, using lazy loading to reduce memory usage.
 High-Quality Examples
 Example 1: Feature Engineering for a DateTime column
 If you see a DateTime column like 'transaction_date', a good feature_engineering list would be ["Extract 'month' from 'transaction_date'", "Extract 'day_of_week' from 'transaction_date'"].

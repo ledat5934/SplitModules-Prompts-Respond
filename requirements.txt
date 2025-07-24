@@ -15,3 +15,5 @@ torchvision
 gensim
 pillow
 nbformat
+openai
+tiktoken

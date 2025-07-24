@@ -69,5 +69,182 @@
     "output_data": "Predicted domain labels for the input queries.",
     "input_data": "A collection of text sentences labeled with their corresponding query domains, compiled from various sources including web search logs and online forums.",
     "task": "Multiclass Text Classification"
+  },
+  {
+    "id": 4,
+    "link to the dataset": [
+      "/kaggle/input/my-dataset5934-3/predict_the_llm/train.csv",
+      "/kaggle/input/my-dataset5934-3/predict_the_llm/test.csv",
+      "/kaggle/input/my-dataset5934-3/predict_the_llm/sample_submission.csv"
+    ],
+    "files": {
+      "train.csv": "/kaggle/input/my-dataset5934-3/predict_the_llm/train.csv",
+      "test.csv": "/kaggle/input/my-dataset5934-3/predict_the_llm/test.csv",
+      "sample_submission.csv": "/kaggle/input/my-dataset5934-3/predict_the_llm/sample_submission.csv"
+    },
+    "task": "Identify the originating LLM model from given outputs",
+    "input_data": "The input data consists of a training dataset (train.csv) with columns Question, Response, and target (values 0-6), and a test dataset (test.csv) with columns id, Question, and Response.",
+    "output_data": "The output data is a probability distribution for each of the 7 possible LLM models for every data point in the test set, formatted as target_0 to target_6.",
+    "data file description": {
+      "train.csv": "Training dataset containing questions, responses, and target labels (0-6).",
+      "test.csv": "Test dataset containing ids, questions, and responses for which model predictions are to be made.",
+      "sample_submission.csv": "Example submission format showing how to structure the output with probabilities for each model."
+    },
+    "name": "H2O.ai Hackathon - LLM Model Detection"
+  },
+  {
+    "id": 5,
+    "link to the dataset": [
+      "/kaggle/input/my-dataset5934-3/pet_finder/train.csv",
+      "/kaggle/input/my-dataset5934-3/pet_finder/test/test.csv",
+      "/kaggle/input/my-dataset5934-3/pet_finder/test/sample_submission.csv",
+      "/kaggle/input/my-dataset5934-3/pet_finder/breed_labels.csv",
+      "/kaggle/input/my-dataset5934-3/pet_finder/color_labels.csv",
+      "/kaggle/input/my-dataset5934-3/pet_finder/state_labels.csv"
+    ],
+    "files": {
+      "train.csv": "/kaggle/input/my-dataset5934-3/pet_finder/train.csv",
+      "test.csv": "/kaggle/input/my-dataset5934-3/pet_finder/test/test.csv",
+      "sample_submission.csv": "/kaggle/input/my-dataset5934-3/pet_finder/test/sample_submission.csv",
+      "breed_labels.csv": "/kaggle/input/my-dataset5934-3/pet_finder/breed_labels.csv",
+      "color_labels.csv": "/kaggle/input/my-dataset5934-3/pet_finder/color_labels.csv",
+      "state_labels.csv": "/kaggle/input/my-dataset5934-3/pet_finder/state_labels.csv"
+    },
+    "output_data": "The output data is a predicted adoption speed for each pet, represented as a categorical value ranging from 0 (same day adoption) to 4 (no adoption after 100 days).",
+    "task": "Predict the speed at which a pet is adopted based on its profile data.",
+    "data file description": {
+      "train.csv": "Tabular/text data for the training set",
+      "test.csv": "Tabular/text data for the test set",
+      "sample_submission.csv": "A sample submission file in the correct format",
+      "breed_labels.csv": "Contains Type, and BreedName for each BreedID. Type 1 is dog, 2 is cat.",
+      "color_labels.csv": "Contains ColorName for each ColorID",
+      "state_labels.csv": "Contains StateName for each StateID",
+      "train_images/": "Contains images for the train.csv",
+      "test_images/": "Contains images for test.csv"
+    },
+    "input_data": "The input data consists of tabular data from train.csv and test.csv, which includes pet characteristics such as age, breed, gender, health status, and images of the pets.",
+    "name": "Pet Adoption Speed Prediction"
+  },
+  {
+    "id": 6,
+    "link to the dataset": [
+      "/kaggle/input/my-dataset5934-3/multi_label_classification/train.csv",
+      "/kaggle/input/my-dataset5934-3/multi_label_classification/test.csv"
+    ],
+    "files": {
+      "train.csv": "/kaggle/input/my-dataset5934-3/multi_label_classification/train.csv",
+      "test.csv": "/kaggle/input/my-dataset5934-3/multi_label_classification/test.csv"
+    },
+    "name": "Multi-label Classification Competition",
+    "output_data": "The output will be a set of predicted labels for each image, indicating the presence of each label.",
+    "task": "Image classification with multiple labels",
+    "input_data": "The dataset includes images, each associated with one or more labels (1-19, with 12 missing) and a short caption summarizing the image.",
+    "data file description": {
+      "train.csv": "the training set",
+      "test.csv": "the test set",
+      "data/*.jpg": "the images"
+    }
+  },
+  {
+    "id": 7,
+    "link to the dataset": [
+      "/kaggle/input/my-dataset5934-3/dog_breed_classification/sample_submission.csv",
+      "/kaggle/input/my-dataset5934-3/dog_breed_classification/train.csv",
+      "/kaggle/input/my-dataset5934-3/dog_breed_classification/test.csv"
+    ],
+    "files": {
+      "sample_submission.csv": "/kaggle/input/my-dataset5934-3/dog_breed_classification/sample_submission.csv",
+      "train.csv": "/kaggle/input/my-dataset5934-3/dog_breed_classification/train.csv",
+      "test.csv": "/kaggle/input/my-dataset5934-3/dog_breed_classification/test.csv"
+    },
+    "data file description": {
+      "train/": "the training set, you are provided the breed for these dogs",
+      "test/": "the test set, you must predict the probability of each breed for each image",
+      "sample_submission.csv": "a sample submission file in the correct format",
+      "train.csv": "the breeds for the images in the train set",
+      "test.csv": "test set"
+    },
+    "name": "Dog Breed Identification",
+    "input_data": "A training set and a test set of images of dogs, each labeled with its breed for the training set.",
+    "task": "Image Classification",
+    "output_data": "A probability distribution for each dog breed for the images in the test set."
+  },
+  {
+    "id": 8,
+    "link to the dataset": [
+      "/kaggle/input/my-dataset5934-3/paddy_disease_classification/train.csv",
+      "/kaggle/input/my-dataset5934-3/paddy_disease_classification/sample_submission.csv",
+      "/kaggle/input/my-dataset5934-3/paddy_disease_classification/train_images",
+      "/kaggle/input/my-dataset5934-3/paddy_disease_classification/test_images"
+    ],
+    "files": {
+      "train.csv": "/kaggle/input/my-dataset5934-3/paddy_disease_classification/train.csv",
+      "sample_submission.csv": "/kaggle/input/my-dataset5934-3/paddy_disease_classification/sample_submission.csv",
+      "train_images": "/kaggle/input/my-dataset5934-3/paddy_disease_classification/train_images",
+      "test_images": "/kaggle/input/my-dataset5934-3/paddy_disease_classification/test_images"
+    },
+    "name": "Paddy Leaf Disease Classification",
+    "data file description": {
+      "train.csv": "The training set containing image_id, label, variety, and age.",
+      "sample_submission.csv": "Sample submission file format for predictions.",
+      "train_images": "Directory containing 10,407 training images corresponding to the image_id in train.csv.",
+      "test_images": "Directory containing 3,469 test set images to be classified."
+    },
+    "output_data": "A CSV file containing image_id and the predicted label for each test image, indicating the disease category or normal leaf.",
+    "input_data": "A training dataset of 10,407 labeled paddy leaf images across ten classes (nine disease categories and normal leaf) along with additional metadata such as paddy variety and age. A test dataset of 3,469 paddy leaf images for classification.",
+    "task": "Image Classification"
+  },
+  {
+    "id": 9,
+    "link to the dataset": [
+      "/kaggle/input/my-dataset5934-3/steel_plate_defect_prediction/train.csv",
+      "/kaggle/input/my-dataset5934-3/steel_plate_defect_prediction/test.csv",
+      "/kaggle/input/my-dataset5934-3/steel_plate_defect_prediction/sample_submission.csv"
+    ],
+    "files": {
+      "train.csv": "/kaggle/input/my-dataset5934-3/steel_plate_defect_prediction/train.csv",
+      "test.csv": "/kaggle/input/my-dataset5934-3/steel_plate_defect_prediction/test.csv",
+      "sample_submission.csv": "/kaggle/input/my-dataset5934-3/steel_plate_defect_prediction/sample_submission.csv"
+    },
+    "output_data": "The output should be a CSV file containing the predicted probabilities for each of the 7 defect categories for the test set.",
+    "name": "Kaggle Playground Series 2024 - Steel Plate Defect Prediction",
+    "input_data": "The dataset includes a training set with features and 7 binary target variables representing different defect categories on steel plates.",
+    "data file description": {
+      "train.csv": "The training dataset; there are 7 binary targets: Pastry, Z_Scratch, K_Scatch, Stains, Dirtiness, Bumps, Other_Faults",
+      "test.csv": "The test dataset; your objective is to predict the probability of each of the 7 binary targets",
+      "sample_submission.csv": "A sample submission file in the correct format"
+    },
+    "task": "Predict the probability of defects on steel plates"
+  },
+  {
+    "id": 10,
+    "link to the dataset": [
+      "/kaggle/input/my-dataset5934-3/PlantTraits2024/train_images",
+      "/kaggle/input/my-dataset5934-3/PlantTraits2024/train.csv",
+      "/kaggle/input/my-dataset5934-3/PlantTraits2024/test_images",
+      "/kaggle/input/my-dataset5934-3/PlantTraits2024/test.csv",
+      "/kaggle/input/my-dataset5934-3/PlantTraits2024/target_name_meta.tsv",
+      "/kaggle/input/my-dataset5934-3/PlantTraits2024/sample_submission.csv"
+    ],
+    "files": {
+      "train_images": "/kaggle/input/my-dataset5934-3/PlantTraits2024/train_images",
+      "train.csv": "/kaggle/input/my-dataset5934-3/PlantTraits2024/train.csv",
+      "test_images": "/kaggle/input/my-dataset5934-3/PlantTraits2024/test_images",
+      "test.csv": "/kaggle/input/my-dataset5934-3/PlantTraits2024/test.csv",
+      "target_name_meta.tsv": "/kaggle/input/my-dataset5934-3/PlantTraits2024/target_name_meta.tsv",
+      "sample_submission.csv": "/kaggle/input/my-dataset5934-3/PlantTraits2024/sample_submission.csv"
+    },
+    "name": "PlantTraits2024 Challenge",
+    "output_data": "Predictions for multiple plant traits (e.g., leaf area, plant height) for each test image, including mean and standard deviation of traits.",
+    "task": "Predict plant traits from images and ancillary data",
+    "data file description": {
+      "train_images": "The folder with the training images (.jpeg)",
+      "train.csv": "The labels and the ancillary data (satellite data, soil data, climate data etc.) for each training image",
+      "test_images": "The folder with the test images (.jpeg) that shall be used to create the predictions for the submission.",
+      "test.csv": "The ancillary data (satellite data, soil data, climate data etc.) for each test image",
+      "target_name_meta.tsv": "Full names of the traits obtained from the TRY database.",
+      "sample_submission.csv": "A sample submission file in the correct format."
+    },
+    "input_data": "Training images of plants along with their corresponding labels and ancillary data including climate, soil, and satellite data."
   }
 ]
