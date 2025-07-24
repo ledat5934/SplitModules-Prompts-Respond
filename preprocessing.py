@@ -164,7 +164,7 @@ Previous code:
 
 Error message:
 {error_message}
-## FIX INSTRUCTIONS:
+## FIX INSTRUCTIONS(IMPORTANT: Handle the error carefully):
 1. Identify the code snippet that caused the error
 2. Analyze the error carefully
 3. Fix the specific issue that caused the error
