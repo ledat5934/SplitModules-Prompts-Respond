@@ -69,6 +69,7 @@ class PreprocessingGenerator:
         prompt = f"""
 You are a professional Machine Learning Engineer.
 Generate complete and executable Python preprocessing code for the dataset below.
+IMPORTANT: Preprocess data by batch using generators to reduce memory usage.
 
 ## DATASET INFO:
 - Name: {dataset_name}
@@ -84,41 +85,71 @@ Generate complete and executable Python preprocessing code for the dataset below
 {json.dumps(target_info, indent=2)}
 
 ## REQUIREMENTS:
-1. Generate COMPLETE, EXECUTABLE Python code
-2. Include all necessary imports
-3. Handle file loading from the provided paths
-4. Follow the preprocessing guidelines exactly
-5. Return a function `preprocess_data()` that takes file paths and returns (X_train, X_test, y_train, y_test)
-6. Include error handling and data validation
-7. Use pandas, scikit-learn, numpy as main libraries
-9. Limit the comment in the code.
-10. Preprocessing both the train and test data.
-11. Test the execution on the real data or parts of it(if the dataset is large), not the dummy data.
-12. **Critical Error Handling**: The main execution block (`if __name__ == "__main__":`) MUST be wrapped in a try...except block. If ANY exception occurs during the process, the script MUST print the error and then **exit with a non-zero status code** using `sys.exit(1)`.
-13. The code should executable in Kaggle with GPU P100, 30GB Ram CPU and 16GB Ram GPU.
-14. IMPORTANT: using lazy loading to reduce memory usage.
-15. Any caught exception must be printed to the standard error stream (stderr), not to the standard output (stdout).
+1. Generate COMPLETE, EXECUTABLE Python code.
+2. Include all necessary imports.
+3. Handle file loading from the provided paths.
+4. Follow the preprocessing guidelines exactly.
+5. Create separate generator functions for training, validation, and test data (e.g., `create_train_generator`, `create_test_generator`). Each generator should `yield` batches of (features, labels). For the test set, labels can be None.
+6. Include robust error handling and data validation.
+7. Use pandas, scikit-learn, numpy as main libraries.
+8. Write clean code with concise comments for complex logic.
+9. Preprocess both the train and test data.
+10. The main execution block MUST test the generators by fetching and inspecting the FIRST batch only.
+11. **Critical Error Handling**: The main execution block (`if __name__ == "__main__":`) MUST be wrapped in a try...except block. If ANY exception occurs, print the error to stderr and **exit with a non-zero status code** using `sys.exit(1)`.
+12. The code should be executable in Kaggle with GPU P100, 30GB Ram CPU and 16GB Ram GPU.
+13. Any caught exception must be printed to the standard error stream (stderr).
 ## CODE STRUCTURE:
-#import necessary libraries
 
-def preprocess_data(file_paths):
-    \"\"\"
-    Preprocess data according to guidelines
-    Returns: X_train, X_test, y_train, y_test
-    \"\"\"
-    # Your preprocessing code here
-    return X_train, X_test, y_train, y_test
+# import necessary libraries
+
+def create_train_generator(train_file_path, batch_size):
+    # Your generator code here
+    # It should read the data in chunks and yield batches
+    pass
+
+def create_test_generator(test_file_path, batch_size):
+    # Your generator code here
+    pass
+
+# Main function to orchestrate the process (optional but good practice)
+def preprocess_data(file_paths, batch_size):
+    # Creates and returns data generators for train, val, and test sets.
+    # Returns: (train_generator, val_generator, test_generator)
+    # Logic to split train data if needed and create generators
+    train_path = file_paths['train'] # Assuming file_paths is a dict
+    test_path = file_paths['test']
+    
+    train_generator = create_train_generator(train_path, batch_size)
+    test_generator = create_test_generator(test_path, batch_size)
+    
+    # Note: Validation generator would be created from a split of the train_path data
+    return train_generator, None, test_generator # Placeholder for val_generator
 
 # Test the function
 if __name__ == "__main__":
-    file_paths = {file_paths}
-    X_train, X_test, y_train, y_test = preprocess_data(file_paths)
-    print(f"Preprocessing complete!")
-    print(f"X_train shape: {{X_train.shape}}")
-    print(f"X_test shape: {{X_test.shape}}")
-    print(f"y_train shape: {{y_train.shape}}")
-    print(f"y_test shape: {{y_test.shape}}")
-```
+    try:
+        BATCH_SIZE = 
+        file_paths = 
+
+        train_gen, val_gen, test_gen = preprocess_data(file_paths, BATCH_SIZE)
+
+        print("Data generators created successfully!")
+
+        # Test the train generator by fetching the first batch
+        if train_gen:
+            print("\n--- Testing Train Generator ---")
+            first_batch_X, first_batch_y = next(train_gen)
+            print(f"First batch X shape:")
+            print(f"First batch y shape:")
+
+        # Test the test generator by fetching the first batch
+        if test_gen:
+            print("\n--- Testing Test Generator ---")
+            first_batch_X_test, _ = next(test_gen) # Label is expected to be None
+            print(f"First batch X_test shape:")
+
+    except Exception as e:
+        ...
 
 """
 
