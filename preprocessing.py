@@ -165,10 +165,11 @@ Previous code:
 Error message:
 {error_message}
 ## FIX INSTRUCTIONS:
-1. Analyze the error carefully
-2. Fix the specific issue that caused the error
-3. Ensure the code runs without errors
-4. Keep the same overall structure but fix the problematic parts
+1. Identify the code snippet that caused the error
+2. Analyze the error carefully
+3. Fix the specific issue that caused the error
+4. Ensure the code runs without errors
+5. Keep the same overall structure but fix the problematic parts
 """
 
         prompt += "\nGenerate the corrected Python code:"

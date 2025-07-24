@@ -131,12 +131,13 @@ Previous code:
 Error message:
 {error_message}
 ## FIX INSTRUCTIONS:
-1. Analyze the error carefully
-2. Fix the specific issue that caused the error
-3. Ensure compatibility with the preprocessing function
-4. Keep the same overall structure but fix the problematic parts
-5. Make sure the combined preprocessing + modeling pipeline works
-6. Test all imports and function calls
+1. Identify the code snippet that caused the error
+2. Analyze the error carefully
+3. Fix the specific issue that caused the error
+4. Ensure compatibility with the preprocessing function
+5. Keep the same overall structure but fix the problematic parts
+6. Make sure the combined preprocessing + modeling pipeline works
+7. Test all imports and function calls
 """
 
         prompt += "\nGenerate the corrected Python modeling code:"
