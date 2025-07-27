@@ -261,7 +261,7 @@
     "input_data": "Images and optional captions for each sample",
     "output_data": "Predicted labels for each image (one or more labels in the range 1-19)",
     "data file description": {
-      "train.csv": "Training set CSV containing ImageID, Labels (one or more per image), and Caption",
+      "train.csv": "Training set CSV containing ImageID(contains '.jpg' at the end), Labels (one or more per image), and Caption",
       "test.csv": "Test set CSV containing ImageID and Caption without Labels",
       "data": "Folder containing all .jpg image files referenced by ImageID"
     }
