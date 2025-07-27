@@ -16,7 +16,7 @@ load_dotenv()
 class PreprocessingGenerator:
     def __init__(self, max_retries: int = 5):
         self.max_retries = max_retries
-        self.model_name = "gpt-4o-mini"
+        self.model_name = "o4-mini"
         self.setup_openai()
     def setup_openai(self):
         api_key = os.getenv("OPENAI_API_KEY")
@@ -184,7 +184,7 @@ Error message:
             response = self.client.chat.completions.create(
             model=self.model_name,
             messages=[{"role": "user", "content": prompt}],
-            temperature=0.0,
+            #temperature=0.0,
             top_p=0.95,
             max_tokens=16384,
             )

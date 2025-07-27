@@ -1,242 +1,241 @@
 import sys
-import json 
+import json
 import subprocess
+import argparse
+import traceback
+import os
+import tempfile
 from pathlib import Path
 from datetime import datetime
+from typing import Dict, List, Optional, Tuple
 
+# Third-party imports (ensure these are installed)
+from dotenv import load_dotenv
+
+# ==============================================================================
+# CONFIGURATION & SETUP
+# ==============================================================================
+load_dotenv()
+
+# --- Logger Setup ---
+import logging
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
+)
+logger = logging.getLogger(__name__)
+
+# ==============================================================================
+# PIPELINE STEPS (Importing and wrapping existing logic)
+# ==============================================================================
+# NOTE: The following functions assume the original scripts (or their logic) are available.
+
+# Bước 0: Tạo metadata (hàm đã được sửa đổi để import)
+from metadata_create import generate_metadata_for_path
+# Bước 1: Phân tích dữ liệu
 from profile_data import run_profiling
+# Bước 2: Tạo hướng dẫn
 from guideline_create import prepare_for_guideline_generation, generate_all_guidelines
+# Bước 3: Tạo code tiền xử lý
 from preprocessing import PreprocessingGenerator
+# Bước 4: Tạo code mô hình hóa
 from modeling import ModelingGenerator
+# Bước 5: Lắp ráp code cuối cùng
+from code_assembler import CodeAssembler
 
-def run_single_dataset_profiling(dataset_id: str, meta_file: str = 'meta-data.json', output_root: str = 'profiling_results'):
-    print(f'1: Profiling dataset {dataset_id}')
-    meta_path = Path(meta_file)
-    if not meta_path.exists():
-        print(f'meta-data.json not found in {meta_path}')
-        return False
-    
-    all_metadata = json.loads(meta_path.read_text(encoding='utf-8'))
-    target_dataset = None
-    for dataset in all_metadata:
-        if str(dataset.get('id')) == str(dataset_id):
-            target_dataset = dataset
-            break
 
-    if not target_dataset:
-        print(f'Dataset {dataset_id} not found in {meta_file}')
-        return False
-    
-    temp_meta = [target_dataset]
-    temp_meta_file = f'temp_meta_{dataset_id}.json'
+def run_step_1_profiling(dataset_id: str, meta_file: str, output_root: str) -> bool:
+    """Wrapper for the data profiling step."""
+    logger.info(f"STEP 1: Profiling dataset {dataset_id}")
     try:
-        Path(temp_meta_file).write_text(json.dumps(temp_meta, indent=2, ensure_ascii=False), encoding='utf-8')
+        # Create a temporary metadata file containing only the target dataset
+        all_metadata = json.loads(Path(meta_file).read_text(encoding='utf-8'))
+        target_dataset = next((ds for ds in all_metadata if str(ds.get('id')) == dataset_id), None)
+        if not target_dataset:
+            logger.error(f"Dataset {dataset_id} not found in {meta_file}")
+            return False
+        
+        with tempfile.NamedTemporaryFile(mode='w', suffix='.json', delete=False, encoding='utf-8') as f:
+            json.dump([target_dataset], f, indent=2, ensure_ascii=False)
+            temp_meta_file = f.name
+        
+        # Giả sử run_profiling có thể nhận file meta tạm thời
         run_profiling(temp_meta_file, output_root)
-        print(f'Profiling results saved to {output_root}')
+        os.unlink(temp_meta_file) # Clean up
+        logger.info(f"Profiling successful for dataset {dataset_id}")
         return True
     except Exception as e:
-        print(f'Error during profiling: {e}')
-        if Path(temp_meta_file).exists():
-            Path(temp_meta_file).unlink()
-        return False
-    
-def run_single_dataset_guidelines(dataset_id: str):
-    """Generate guidelines chỉ cho một dataset cụ thể"""
-    print(f"\n STEP 2: GENERATING GUIDELINES FOR DATASET {dataset_id}")
-    print("="*60)
-    
-    try:
-        # Chuẩn bị guideline inputs (sẽ tạo cho tất cả nhưng ta chỉ cần dataset này)
-        guideline_inputs = prepare_for_guideline_generation()
-        
-        # Lọc chỉ lấy dataset cần thiết
-        target_input = None
-        for inp in guideline_inputs:
-            if str(inp['task_info']['dataset_id']) == str(dataset_id):
-                target_input = inp
-                break
-        
-        if not target_input:
-            print(f" Không tìm thấy guideline input cho dataset {dataset_id}")
-            return False
-        
-        # Generate guidelines chỉ cho dataset này
-        result = generate_all_guidelines([target_input])
-        
-        if result:
-            print(f" Hoàn tất tạo guidelines cho dataset {dataset_id}")
-            return True
-        else:
-            print(f" Không thể tạo guidelines cho dataset {dataset_id}")
-            return False
-            
-    except Exception as e:
-        print(f" Lỗi khi tạo guidelines: {e}")
+        logger.error(f"Error during profiling: {e}", exc_info=True)
         return False
 
-def run_single_dataset_preprocessing(dataset_id: str):
-    """Generate preprocessing code cho một dataset cụ thể"""
-    print(f"\n STEP 3: GENERATING PREPROCESSING CODE FOR DATASET {dataset_id}")
-    print("="*60)
-    
+def run_step_2_guidelines(dataset_id: str) -> bool:
+    """Wrapper for the guideline generation step."""
+    logger.info(f"STEP 2: Generating Guidelines for dataset {dataset_id}")
     try:
-        # Sử dụng class PreprocessingGenerator từ module có sẵn
-        generator = PreprocessingGenerator(max_retries=5)
+        all_inputs = prepare_for_guideline_generation()
+        target_input = next((inp for inp in all_inputs if str(inp.get('task_info', {}).get('dataset_id')) == dataset_id), None)
+        if not target_input:
+            logger.error(f"Could not prepare guideline input for dataset {dataset_id}")
+            return False
         
-        # Gọi pipeline với các file cần thiết
-        result = generator.run_preprocessing_pipeline(
+        result = generate_all_guidelines([target_input])
+        return bool(result)
+    except Exception as e:
+        logger.error(f"Error during guideline generation: {e}", exc_info=True)
+        return False
+
+def run_step_3_preprocessing(dataset_id: str) -> bool:
+    """Wrapper for the preprocessing code generation step."""
+    logger.info(f"STEP 3: Generating Preprocessing Code for dataset {dataset_id}")
+    try:
+        generator = PreprocessingGenerator()
+        result_path = generator.run_preprocessing_pipeline(
             guideline_file="guidelines_output/all_guidelines.json",
-            meta_data_file="meta-data.json", 
+            meta_data_file="meta-data.json",
             dataset_id=dataset_id
         )
-        
-        if result:
-            print(f" Hoàn tất tạo preprocessing code cho dataset {dataset_id}")
-            print(f"   File được lưu tại: {result}")
-            return True
-        else:
-            print(f" Không thể tạo preprocessing code cho dataset {dataset_id}")
-            return False
-            
+        return bool(result_path)
     except Exception as e:
-        print(f" Lỗi khi tạo preprocessing code: {e}")
+        logger.error(f"Error during preprocessing code generation: {e}", exc_info=True)
         return False
 
-def run_single_dataset_modeling(dataset_id: str):
-    """Generate modeling code cho một dataset cụ thể"""
-    print(f"\n STEP 4: GENERATING MODELING CODE FOR DATASET {dataset_id}")
-    print("="*60)
-    
+def run_step_4_modeling(dataset_id: str) -> bool:
+    """Wrapper for the modeling code generation step."""
+    logger.info(f"STEP 4: Generating Modeling Code for dataset {dataset_id}")
     try:
-        # Tìm preprocessing file đã được tạo
         preprocessing_file = Path("generated_code") / f"preprocessing_dataset_{dataset_id}.py"
-        
         if not preprocessing_file.exists():
-            print(f" Không tìm thấy preprocessing file: {preprocessing_file}")
+            logger.error(f"Required preprocessing file not found: {preprocessing_file}")
             return False
-        
-        # Sử dụng class ModelingGenerator từ module có sẵn
-        generator = ModelingGenerator(max_retries=5)
-        
-        # Gọi pipeline với các file cần thiết
-        result = generator.run_modeling_pipeline(
+            
+        generator = ModelingGenerator()
+        result_path = generator.run_modeling_pipeline(
             guideline_file="guidelines_output/all_guidelines.json",
             meta_data_file="meta-data.json",
             preprocessing_file=str(preprocessing_file),
             dataset_id=dataset_id
         )
-        
-        if result:
-            print(f" Hoàn tất tạo modeling code cho dataset {dataset_id}")
-            print(f"   File được lưu tại: {result}")
-            return True
-        else:
-            print(f" Không thể tạo modeling code cho dataset {dataset_id}")
-            return False
-            
+        return bool(result_path)
     except Exception as e:
-        print(f" Lỗi khi tạo modeling code: {e}")
+        logger.error(f"Error during modeling code generation: {e}", exc_info=True)
         return False
 
-def run_full_pipeline(dataset_id: str):
-    """Chạy toàn bộ pipeline cho một dataset"""
-    print(f"\n STARTING FULL AUTOML PIPELINE FOR DATASET {dataset_id}")
-    print("="*80)
+def run_step_5_assembly(dataset_id: str) -> bool:
+    """Wrapper for the final code assembly step."""
+    logger.info(f"STEP 5: Assembling Final Script for dataset {dataset_id}")
+    try:
+        project_name = f"dataset_{dataset_id}_full_pipeline"
+        output_dir = Path("final_pipelines")
+        
+        modeling_file = Path("generated_code") / f"modeling_dataset_{dataset_id}.py"
+        if not modeling_file.exists():
+            logger.error(f"Modeling file not found, cannot assemble final script: {modeling_file}")
+            return False
+
+        # The modeling file already contains the preprocessing code, so we only need it.
+        stage_files = [modeling_file]
+
+        assembler = CodeAssembler()
+        assembler.assemble(project_name, stage_files, output_dir)
+        logger.info(f"Final assembled script created in '{output_dir}' directory.")
+        return True
+    except Exception as e:
+        logger.error(f"Error during code assembly: {e}", exc_info=True)
+        return False
+
+# ==============================================================================
+# MAIN ORCHESTRATOR
+# ==============================================================================
+
+def run_pipeline_for_id(dataset_id: str) -> bool:
+    """
+    Runs the full pipeline (Steps 1-5) for a given dataset ID.
+    Returns True on success, False on failure.
+    """
     
+    logger.info(f"\nSTARTING FULL AUTOML PIPELINE FOR DATASET {dataset_id}")
+    logger.info("="*80)
     start_time = datetime.now()
     
-    try:
-        # Kiểm tra requirements
-        required_files = ["meta-data.json", ".env"]
-        missing_files = [f for f in required_files if not Path(f).exists()]
-        
-        if missing_files:
-            print(f" Thiếu các file cần thiết: {missing_files}")
-            print("Vui lòng đảm bảo có file meta-data.json và .env với GEMINI_API_KEY")
+    steps = [
+        (run_step_1_profiling, "Profiling"),
+        (run_step_2_guidelines, "Guidelines Generation"),
+        (run_step_3_preprocessing, "Preprocessing Code Generation"),
+        (run_step_4_modeling, "Modeling Code Generation"),
+        (run_step_5_assembly, "Code Assembly"),
+    ]
+    
+    for step_func, step_name in steps:
+        logger.info(f"--- Running Step: {step_name} ---")
+        # For profiling, we need to pass the meta_file argument
+        if step_name == "Profiling":
+            success = step_func(dataset_id, 'meta-data.json', 'profiling_results')
+        else:
+            success = step_func(dataset_id)
+
+        if not success:
+            logger.error(f"PIPELINE FAILED at Step: {step_name}")
             return False
-        
-        # Step 1: Profiling
-        if not run_single_dataset_profiling(dataset_id):
-            print("  PIPELINE FAILED at Step 1: Profiling")
-            return False
-        
-        # Step 2: Guidelines
-        if not run_single_dataset_guidelines(dataset_id):
-            print(" PIPELINE FAILED at Step 2: Guidelines Generation")
-            return False
-        
-        # Step 3: Preprocessing
-        if not run_single_dataset_preprocessing(dataset_id):
-            print(" PIPELINE FAILED at Step 3: Preprocessing Code Generation")
-            return False
-        
-        # Step 4: Modeling
-        if not run_single_dataset_modeling(dataset_id):
-            print(" PIPELINE FAILED at Step 4: Modeling Code Generation")
-            return False
-        
-        # Success!
-        end_time = datetime.now()
-        duration = end_time - start_time
-        
-        print(f"\n PIPELINE COMPLETED SUCCESSFULLY!")
-        print("="*80)
-        print(f" Total time: {duration}")
-        print(f" Generated files:")
-        print(f"   - Profiling: profiling_results/{dataset_id}_*/")
-        print(f"   - Guidelines: guidelines_output/")
-        print(f"   - Preprocessing: generated_code/preprocessing_dataset_{dataset_id}.py")
-        print(f"   - Modeling: generated_code/modeling_dataset_{dataset_id}.py")
-        print("\n Your AutoML pipeline is ready!")
-        print(f"   To run the complete model, execute:")
-        print(f"   python generated_code/modeling_dataset_{dataset_id}.py")
-        
-        return True
-        
-    except Exception as e:
-        print(f"\n PIPELINE FAILED with exception: {e}")
-        import traceback
-        traceback.print_exc()
-        return False
+
+    end_time = datetime.now()
+    logger.info(f"\nPIPELINE COMPLETED SUCCESSFULLY FOR DATASET {dataset_id}!")
+    logger.info("="*80)
+    logger.info(f"Total time: {end_time - start_time}")
+    final_script_path = f"final_pipelines/dataset_{dataset_id}_full_pipeline.py"
+    logger.info(f"Final executable script located at: {final_script_path}")
+    logger.info(f"To run the complete model, execute:\n  python {final_script_path}")
+    
+    return True
 
 def main():
-    """Main execution function"""
-    if len(sys.argv) != 2:
-        print("Usage: python full_pipeline.py <dataset_id>")
-        print("Example: python full_pipeline.py 2")
-        print("\nAvailable datasets in meta-data.json:")
-        
-        # Hiển thị danh sách datasets có sẵn
-        try:
-            meta_data = json.loads(Path("meta-data.json").read_text(encoding='utf-8'))
-            for dataset in meta_data:
-                print(f"  - ID: {dataset.get('id')}, Name: {dataset.get('name')}")
-        except:
-            print("  (Cannot read meta-data.json)")
-        
+    """Main execution function with argument parsing for different modes."""
+    parser = argparse.ArgumentParser(
+        description="Full AutoML Pipeline Orchestrator.",
+        formatter_class=argparse.RawTextHelpFormatter
+    )
+    group = parser.add_mutually_exclusive_group(required=True)
+    group.add_argument("--id", help="Run pipeline for an existing dataset ID.")
+    group.add_argument("--path", help="Run pipeline for a new dataset at the given folder path.")
+
+    args = parser.parse_args()
+
+    # Check for required files
+    if any(not Path(f).exists() for f in ["meta-data.json", ".env"]):
+        logger.critical("Missing required files. Ensure 'meta-data.json' and '.env' exist.")
         sys.exit(1)
-    
-    dataset_id = sys.argv[1]
-    
+
     try:
-        # Run full pipeline
-        success = run_full_pipeline(dataset_id)
+        pipeline_success = False
+        if args.id:
+            pipeline_success = run_pipeline_for_id(args.id)
         
-        if success:
-            print(f"\n SUCCESS! Full pipeline completed for dataset {dataset_id}")
-            sys.exit(0)
-        else:
-            print(f"\n FAILED! Pipeline could not complete for dataset {dataset_id}")
-            sys.exit(1)
+        elif args.path:
+            dataset_path = Path(args.path)
+            if not dataset_path.is_dir():
+                logger.critical(f"Error: Provided path '{args.path}' is not a valid directory.")
+                sys.exit(1)
             
+            # Step 0: Generate metadata for the new path by calling the imported function
+            logger.info("STEP 0: Generating Metadata for new dataset")
+            new_dataset_id = generate_metadata_for_path(dataset_path, 'meta-data.json')
+            
+            if new_dataset_id:
+                # Run the rest of the pipeline with the new ID
+                pipeline_success = run_pipeline_for_id(new_dataset_id)
+            else:
+                logger.critical("Could not generate metadata for the new path. Pipeline halted.")
+        
+        # Determine final exit code based on pipeline result
+        sys.exit(0 if pipeline_success else 1)
+
     except KeyboardInterrupt:
-        print(f"\n  Pipeline interrupted by user")
+        logger.info("\nPipeline interrupted by user.")
         sys.exit(1)
     except Exception as e:
-        print(f"\n CRITICAL ERROR: {e}")
-        import traceback
+        logger.critical(f"A critical error occurred in the pipeline: {e}")
         traceback.print_exc()
         sys.exit(1)
+
 
 if __name__ == "__main__":
     main()

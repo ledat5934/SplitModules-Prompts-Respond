@@ -53,9 +53,9 @@
       "/kaggle/input/my-dataset5934-3/query_domain_classification/Submission_file01.csv"
     ],
     "files": {
-      "train.csv": "E:\\UET\\Lab\\AutoPipelineML\\SplitModules+Prompts+Respond\\Datasets\\datasets\\query_domain_classification\\train.csv",
-      "test.csv": "E:\\UET\\Lab\\AutoPipelineML\\SplitModules+Prompts+Respond\\Datasets\\datasets\\query_domain_classification\\test.csv",
-      "submission_file01.csv": "E:\\UET\\Lab\\AutoPipelineML\\SplitModules+Prompts+Respond\\Datasets\\datasets\\query_domain_classification\\Submission_file01.csv"
+      "train.csv": "/kaggle/input/my-dataset5934-3/query_domain_classification/train.csv",
+      "test.csv": "/kaggle/input/my-dataset5934-3/query_domain_classification/test.csv",
+      "submission_file01.csv": "/kaggle/input/my-dataset5934-3/query_domain_classification/Submission_file01.csv"
     },
     "data file description": {
       "train.csv": "data to train the model, contains: ID, Title, Domain.",
@@ -243,5 +243,27 @@
       "sample_submission.csv": "A sample submission file in the correct format."
     },
     "input_data": "Training images of plants along with their corresponding labels and ancillary data including climate, soil, and satellite data."
+  },
+  {
+    "id": 11,
+    "link to the dataset": [
+      "/kaggle/input/my-dataset5934-3/multi_label_classification/train.csv",
+      "/kaggle/input/my-dataset5934-3/multi_label_classification/test.csv",
+      "/kaggle/input/my-dataset5934-3/multi_label_classification/data"
+    ],
+    "files": {
+      "train.csv": "/kaggle/input/my-dataset5934-3/multi_label_classification/train.csv",
+      "test.csv": "/kaggle/input/my-dataset5934-3/multi_label_classification/test.csv",
+      "data": "/kaggle/input/my-dataset5934-3/multi_label_classification/data"
+    },
+    "name": "COMP5329 Assignment 2 Multi-label Classification Competition",
+    "task": "Multi-label image classification",
+    "input_data": "Images and optional captions for each sample",
+    "output_data": "Predicted labels for each image (one or more labels in the range 1-19)",
+    "data file description": {
+      "train.csv": "Training set CSV containing ImageID, Labels (one or more per image), and Caption",
+      "test.csv": "Test set CSV containing ImageID and Caption without Labels",
+      "data": "Folder containing all .jpg image files referenced by ImageID"
+    }
   }
 ]

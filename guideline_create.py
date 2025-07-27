@@ -12,11 +12,7 @@ import tiktoken # THAY ĐỔI: Import tiktoken để đếm token
 load_dotenv()
 
 # THAY ĐỔI: Hàm đếm token cho các mô hình OpenAI
-def count_tokens_openai(text: str, model: str = "gpt-4o-mini") -> int:
-    """
-    Đếm tokens một cách chính xác cho các mô hình OpenAI sử dụng tiktoken.
-    "o200k_base" là encoding cho gpt-4o, gpt-4o-mini, và gpt-4-turbo.
-    """
+def count_tokens_openai(text: str, model: str = "o4-mini") -> int:
     try:
         encoding = tiktoken.encoding_for_model(model)
     except KeyError:
@@ -257,7 +253,7 @@ No comments (// or #) within the JSON output.
 }}
 }}"""
     return prompt
-def call_openai_for_guideline(prompt: str, model: str = "gpt-4o-mini") -> tuple[Optional[str], int, int]:
+def call_openai_for_guideline(prompt: str, model: str = "o4-mini") -> tuple[Optional[str], int, int]:
 
     input_tokens = count_tokens_openai(prompt, model)
     try:
@@ -272,9 +268,9 @@ def call_openai_for_guideline(prompt: str, model: str = "gpt-4o-mini") -> tuple[
             messages=[
             {"role": "user", "content": prompt}
             ],
-            temperature=0, # Giảm nhiệt độ để có kết quả nhất quán
+            #temperature=0, # Giảm nhiệt độ để có kết quả nhất quán
             top_p=0.95,
-            max_tokens=4096, # gpt-4o-mini có context window lớn, nhưng giới hạn output để tiết kiệm
+            max_tokens=4096,  
             response_format={"type": "json_object"} # Yêu cầu OpenAI trả về JSON
         )
     
@@ -289,7 +285,7 @@ def call_openai_for_guideline(prompt: str, model: str = "gpt-4o-mini") -> tuple[
 def generate_guidelines_for_dataset(guideline_input: Dict, output_dir: Path) -> Optional[Dict]:
     dataset_name = guideline_input['task_info']['name']
     dataset_id = guideline_input['task_info']['dataset_id']
-    model_used = "gpt-4o-mini"
+    model_used = "o4-mini"
     print(f" Generating guidelines for: {dataset_name}")
     
     prompt = create_enhanced_guideline_prompt(guideline_input)
@@ -430,7 +426,7 @@ def main():
     """
     Main function: Chạy toàn bộ pipeline với OpenAI
     """
-    print("AutoML Guideline Generation Pipeline (OpenAI gpt-4o-mini)")  # Cập nhật tên
+    print("AutoML Guideline Generation Pipeline (OpenAI gpt-o4-mini)")  # Cập nhật tên
     print("=" * 50)
 
     print("\nStep 1: Preparing guideline inputs...")
