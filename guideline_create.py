@@ -269,8 +269,9 @@ def call_openai_for_guideline(prompt: str, model: str = "o4-mini") -> tuple[Opti
             {"role": "user", "content": prompt}
             ],
             #temperature=0, # Giảm nhiệt độ để có kết quả nhất quán
-            top_p=0.95,
-            max_tokens=4096,  
+            #top_p=0.95,
+            #max_tokens=4096,  
+            max_completion_tokens = 8192,
             response_format={"type": "json_object"} # Yêu cầu OpenAI trả về JSON
         )
     

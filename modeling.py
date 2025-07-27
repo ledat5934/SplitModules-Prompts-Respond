@@ -153,8 +153,9 @@ Error message:
                 model=self.model_name,
                 messages=[{"role": "user", "content": prompt}],
                 #temperature=0.0,
-                top_p=0.95,
-                max_tokens=16384,
+                #top_p=0.95,
+                #max_tokens=16384,
+                max_completion_tokens = 16384,
             )
             code = response.choices[0].message.content
             
