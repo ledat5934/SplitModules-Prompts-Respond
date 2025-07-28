@@ -100,7 +100,7 @@ Requirements:
 11. When fine tunning pretrained model, use a big number of epochs with early stopping = 1.
 12. The code should executable in Kaggle with GPU P100, 30GB Ram CPU and 16GB Ram GPU.
 13. When doing Deep Learning task, using lazy loading to reduce memory usage.
-14.Any caught exception must be printed to the standard error stream (stderr), not to the standard output (stdout).
+14. Any caught exception must be printed to the standard error stream (stderr), not to the standard output (stdout).
 15. Choose 1 algorithms which you think is the best for the task.
 ##Code format:
 #import necessary libraries
@@ -120,6 +120,7 @@ Requirements:
 8. Use ensemble of models if necessary.
 9. Limit the comment in the code.
 10. **Critical Error Handling**: The main execution block (`if __name__ == "__main__":`) MUST be wrapped in a try...except block. If ANY exception occurs during the process, the script MUST print the error and then **exit with a non-zero status code** using `sys.exit(1)`.
+11. The training argument should be eval_strategy, not evaluation_strategy.
 """
 
         # Add retry context if this is a retry
