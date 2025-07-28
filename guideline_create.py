@@ -231,9 +231,9 @@ No comments (// or #) within the JSON output.
 "task_type": "classification/regression/etc"
 }},
 "modeling": {{
-"recommended_algorithms": ["algorithm"],
+"recommended_algorithms": ["algorithm"](algorithm which you think has the best performance),
 "explanation": "explanation for the recommended algorithms",
-"model_selection": ["model_name1", "model_name2"],
+"model_selection": ["model_name"],
 "model_selection_reasoning": "explanation for the model selection",
 "output_file_structure": {{"submission.csv": "submission file description"}}
 }},
