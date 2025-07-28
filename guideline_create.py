@@ -206,7 +206,7 @@ First, carefully identify the target variable and the task type (classification/
 Second, review each variable. What are its type, statistics, and potential issues?
 
 Third, based on the data properties, decide on the most appropriate ML or DL algorithm.
-
+Recommend only the best algorithm for the task.
 Forth, think about the suitable preprocessing for the algorithm.
 
 Consider using a pretrained model for NLP or CV tasks if necessary.
@@ -244,12 +244,6 @@ No comments (// or #) within the JSON output.
 "missing_values": ["strategy 1"],
 "feature_selection": ["method 1"],
 "data_splitting": {{"train": 0.8, "val": 0.2}}
-}},
-"evaluation": {{
-"metrics": ["metric 1", "metric 2"],
-"validation_strategy": ["approach 1"],
-"performance_benchmarking": ["baseline 1"],
-"result_interpretation": ["interpretation 1"]
 }}
 }}"""
     return prompt
