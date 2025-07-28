@@ -101,6 +101,7 @@ Requirements:
 12. The code should executable in Kaggle with GPU P100, 30GB Ram CPU and 16GB Ram GPU.
 13. When doing Deep Learning task, using lazy loading to reduce memory usage.
 14.Any caught exception must be printed to the standard error stream (stderr), not to the standard output (stdout).
+15. Choose 1 algorithms which you think is the best for the task.
 ##Code format:
 #import necessary libraries
 # Include preprocessing code
