@@ -71,6 +71,7 @@ class ModelingGenerator:
         file_paths = metadata.get('link to the dataset', [])
         output_desc = metadata.get('output_data', '')
         modeling_guideline = guidelines['guidelines'].get('modeling', {})
+        dataset_id = metadata.get('id', '')
 
         prompt = f"""
 You are an expert ML engineer. Generate Python modeling code for this dataset which compatible with the preprocessing code:
@@ -83,6 +84,7 @@ Guidelines:
 
 Preprocessing Code(just the code, no other text, do not include test function):
 {preprocessing_code}
+Preprocessing code is available in generated_code/preprocessing_dataset_{dataset_id}.py
 
 Requirements:
 1. Generate COMPLETE code which Executeable when combined with the preprocessing code

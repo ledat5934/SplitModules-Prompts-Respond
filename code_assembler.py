@@ -7,6 +7,8 @@ import nbformat as nbf # Vẫn cần import này nếu không muốn xóa hoàn 
 
 # Thêm các import mới
 import google.generativeai as genai
+from openai import OpenAI
+
 import os
 from dotenv import load_dotenv # Đảm bảo bạn đã cài đặt: pip install python-dotenv
 
@@ -61,21 +63,19 @@ class CodeAssembler:
         """
         # Tải biến môi trường từ tệp .env
         load_dotenv()
-        GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
-
-        if not GEMINI_API_KEY:
-            logger.warning("GEMINI_API_KEY not found in environment variables or .env file → skipping AI cleaning.")
+        OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+        if not OPENAI_API_KEY:
+            logger.warning("OPENAI_API_KEY not found in environment variables or .env file → skipping AI cleaning.")
             return code
 
         # Cấu hình API key cho thư viện google.generativeai
-        genai.configure(api_key=GEMINI_API_KEY)
+        #genai.configure(api_key=GEMINI_API_KEY)
 
         try:
-            # Khởi tạo model Gemini 2.0 Flash
-            model = genai.GenerativeModel('gemini-2.0-flash')
-
-        except Exception as e:
-            logger.error(f"Failed to load Gemini model 'gemini-2.0-flash': {e} → skipping AI cleaning.")
+            client = OpenAI(api_key=OPENAI_API_KEY)
+            model_name = "o4-mini"
+        except Exception as e:  # pragma: no cover
+            logger.error("Failed to initialise OpenAI client: %s → skipping AI cleaning.", e)
             return code
 
         system_prompt = (
@@ -93,23 +93,22 @@ class CodeAssembler:
         )
 
         try:
-            response = model.generate_content(
-                contents=[
-                    {"role": "user", "parts": [system_prompt]},
-                    {"role": "user", "parts": [f"Here is the script:\n\n{code}"]},
+            response = client.chat.completions.create(
+                model=model_name,
+                messages= [
+                    {"role": "system", "content": system_prompt},
+                    {"role": "user", "content": f"Here is the script:\n\n{code}"},
                 ],
+                max_completion_tokens = 16384,
             )
             
-            cleaned_raw_text = response.text
+            cleaned_raw_text = response.choices[0].message.content
             cleaned_code = remove_code_block_markers(cleaned_raw_text)
 
             logger.info("AI cleaning finished.")
             return cleaned_code
-        except genai.types.BlockedPromptException as e:
-            logger.error(f"Gemini cleaning failed due to safety settings: {e}. Using un-cleaned code.", exc_info=True)
-            return code
         except Exception as exc:  # pragma: no cover
-            logger.error("Gemini cleaning failed (%s). Using un-cleaned code.", exc, exc_info=True)
+            logger.error("OpenAI cleaning failed (%s). Using un-cleaned code.", exc, exc_info=True)
             return code
 
     # ------------------------------------------------------------------
