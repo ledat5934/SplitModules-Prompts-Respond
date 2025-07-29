@@ -95,13 +95,12 @@ Requirements:
 6. Use appropriate libraries and functions
 7. Test the execution on the real data or parts of it(if the dataset is large), not the dummy data.
 8. Generate a submission.csv file for the test.csv file, not the sample_submission.csv file.
-9. The submission.csv file may not have the same rows as the test.csv file, so you need to map the rows to the test.csv file.
-10. With deep learning model, try to use GPU and use appropriate pretrained model if possible.
-11. When fine tunning pretrained model, use a big number of epochs with early stopping = 1.
-12. The code should executable in Kaggle with GPU P100, 30GB Ram CPU and 16GB Ram GPU.
-13. When doing Deep Learning task, using lazy loading to reduce memory usage.
-14. Any caught exception must be printed to the standard error stream (stderr), not to the standard output (stdout).
-15. Choose 1 algorithms which you think is the best for the task.
+9. With deep learning model, try to use GPU and use appropriate pretrained model if possible.
+10. When fine tunning pretrained model, use a big number of epochs with early stopping = 1.
+11. The code should executable in Kaggle with GPU P100, 30GB Ram CPU and 16GB Ram GPU.
+12. When doing Deep Learning task, using lazy loading to reduce memory usage.
+13. Any caught exception must be printed to the standard error stream (stderr), not to the standard output (stdout).
+14. Choose 1 algorithms which you think is the best for the task.
 ##Code format:
 #import necessary libraries
 # Include preprocessing code
