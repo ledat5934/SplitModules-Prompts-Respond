@@ -125,7 +125,7 @@ Requirements:
 
         # Add retry context if this is a retry
         if previous_code and error_message:
-            prompt = f"""
+            prompt += f"""
 ## PREVIOUS ATTEMPT FAILED:
 Previous code:
 ```python
@@ -206,8 +206,13 @@ Error message:
                 return True, result.stdout, prompt_tokens, completion_tokens
             else:
                 print(" Combined pipeline execution failed!")
-                print(result.stderr)
-                return False, result.stderr, 0, 0
+                error_lines = result.stderr.strip().splitlines()
+                last_10_lines = error_lines[-10:]
+                concise_error = '\n'.join(last_10_lines)
+                 
+                print("Last 10 lines of error:")
+                print(concise_error)
+                return False, concise_error, 0, 0
                 
         except subprocess.TimeoutExpired:
             print("   Pipeline execution timed out after 30 minutes")
