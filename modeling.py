@@ -202,7 +202,7 @@ Error message:
             
             if result.returncode == 0:
                 print(" Combined pipeline executed successfully!")
-                return True, result.stdout, prompt_tokens, completion_tokens
+                return True, result.stdout, 0, 0
             else:
                 print(" Combined pipeline execution failed!")
                 error_lines = result.stderr.strip().splitlines()
