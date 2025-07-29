@@ -197,7 +197,11 @@ Error message:
                 code = code.split("```python")[1].split("```")[0].strip()
             elif "```" in code:
                 code = code.split("```")[1].strip()  # Handle cases with just ```
-            print(f" Generated {len(code)} characters of code")
+            prompt_tokens = response.usage.prompt_tokens
+            completion_tokens = response.usage.completion_tokens
+            print(f"Prompt tokens: {prompt_tokens}")
+            print(f"Completion tokens: {completion_tokens}")
+            #print(f" Generated {len(code)} characters of code")
             return code
 
         except Exception as e:

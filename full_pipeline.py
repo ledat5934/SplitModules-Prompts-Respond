@@ -68,7 +68,7 @@ def run_step_1_profiling(dataset_id: str, meta_file: str, output_root: str) -> b
         logger.error(f"Error during profiling: {e}", exc_info=True)
         return False
 
-def run_step_2_guidelines(dataset_id: str) -> bool:
+def run_step_2_guidelines(dataset_id: str) -> Tuple[bool, int, int]:
     """Wrapper for the guideline generation step."""
     logger.info(f"STEP 2: Generating Guidelines for dataset {dataset_id}")
     try:
@@ -76,51 +76,51 @@ def run_step_2_guidelines(dataset_id: str) -> bool:
         target_input = next((inp for inp in all_inputs if str(inp.get('task_info', {}).get('dataset_id')) == dataset_id), None)
         if not target_input:
             logger.error(f"Could not prepare guideline input for dataset {dataset_id}")
-            return False
+            return False, 0, 0
         
         result = generate_all_guidelines([target_input])
-        return bool(result)
+        return bool(result), 0, 0
     except Exception as e:
         logger.error(f"Error during guideline generation: {e}", exc_info=True)
-        return False
+        return False, 0, 0
 
-def run_step_3_preprocessing(dataset_id: str) -> bool:
+def run_step_3_preprocessing(dataset_id: str) -> Tuple[bool, int, int]:
     """Wrapper for the preprocessing code generation step."""
     logger.info(f"STEP 3: Generating Preprocessing Code for dataset {dataset_id}")
     try:
         generator = PreprocessingGenerator()
-        result_path = generator.run_preprocessing_pipeline(
+        result_path, prompt_tokens, completion_tokens = generator.run_preprocessing_pipeline(
             guideline_file="guidelines_output/all_guidelines.json",
             meta_data_file="meta-data.json",
             dataset_id=dataset_id
         )
-        return bool(result_path)
+        return bool(result_path), prompt_tokens, completion_tokens
     except Exception as e:
         logger.error(f"Error during preprocessing code generation: {e}", exc_info=True)
-        return False
+        return False, 0, 0
 
-def run_step_4_modeling(dataset_id: str) -> bool:
+def run_step_4_modeling(dataset_id: str) -> Tuple[bool, int, int]:
     """Wrapper for the modeling code generation step."""
     logger.info(f"STEP 4: Generating Modeling Code for dataset {dataset_id}")
     try:
         preprocessing_file = Path("generated_code") / f"preprocessing_dataset_{dataset_id}.py"
         if not preprocessing_file.exists():
             logger.error(f"Required preprocessing file not found: {preprocessing_file}")
-            return False
+            return False, 0, 0
             
         generator = ModelingGenerator()
-        result_path = generator.run_modeling_pipeline(
+        result_path, prompt_tokens, completion_tokens = generator.run_modeling_pipeline(
             guideline_file="guidelines_output/all_guidelines.json",
             meta_data_file="meta-data.json",
             preprocessing_file=str(preprocessing_file),
             dataset_id=dataset_id
         )
-        return bool(result_path)
+        return bool(result_path), prompt_tokens, completion_tokens
     except Exception as e:
         logger.error(f"Error during modeling code generation: {e}", exc_info=True)
-        return False
+        return False, 0, 0
 
-def run_step_5_assembly(dataset_id: str) -> bool:
+def run_step_5_assembly(dataset_id: str) -> Tuple[bool, int, int]:
     """Wrapper for the final code assembly step."""
     logger.info(f"STEP 5: Assembling Final Script for dataset {dataset_id}")
     try:
@@ -130,7 +130,7 @@ def run_step_5_assembly(dataset_id: str) -> bool:
         modeling_file = Path("generated_code") / f"modeling_dataset_{dataset_id}.py"
         if not modeling_file.exists():
             logger.error(f"Modeling file not found, cannot assemble final script: {modeling_file}")
-            return False
+            return False, 0, 0
 
         # The modeling file already contains the preprocessing code, so we only need it.
         stage_files = [modeling_file]
@@ -147,7 +147,7 @@ def run_step_5_assembly(dataset_id: str) -> bool:
 # MAIN ORCHESTRATOR
 # ==============================================================================
 
-def run_pipeline_for_id(dataset_id: str) -> bool:
+def run_pipeline_for_id(dataset_id: str) -> Tuple[bool, int, int]:
     """
     Runs the full pipeline (Steps 1-5) for a given dataset ID.
     Returns True on success, False on failure.
@@ -156,6 +156,8 @@ def run_pipeline_for_id(dataset_id: str) -> bool:
     logger.info(f"\nSTARTING FULL AUTOML PIPELINE FOR DATASET {dataset_id}")
     logger.info("="*80)
     start_time = datetime.now()
+    prompt_tokens = 0
+    completion_tokens = 0
     
     steps = [
         (run_step_1_profiling, "Profiling"),
@@ -175,8 +177,9 @@ def run_pipeline_for_id(dataset_id: str) -> bool:
 
         if not success:
             logger.error(f"PIPELINE FAILED at Step: {step_name}")
-            return False
-
+            return False, 0, 0
+        prompt_tokens += prompt_tokens
+        completion_tokens += completion_tokens
     end_time = datetime.now()
     logger.info(f"\nPIPELINE COMPLETED SUCCESSFULLY FOR DATASET {dataset_id}!")
     logger.info("="*80)
@@ -185,7 +188,7 @@ def run_pipeline_for_id(dataset_id: str) -> bool:
     logger.info(f"Final executable script located at: {final_script_path}")
     logger.info(f"To run the complete model, execute:\n  python {final_script_path}")
     
-    return True
+    return True, prompt_tokens, completion_tokens
 
 def main():
     """Main execution function with argument parsing for different modes."""
@@ -207,7 +210,7 @@ def main():
     try:
         pipeline_success = False
         if args.id:
-            pipeline_success = run_pipeline_for_id(args.id)
+            pipeline_success, prompt_tokens, completion_tokens = run_pipeline_for_id(args.id)
         
         elif args.path:
             dataset_path = Path(args.path)
@@ -221,10 +224,11 @@ def main():
             
             if new_dataset_id:
                 # Run the rest of the pipeline with the new ID
-                pipeline_success = run_pipeline_for_id(new_dataset_id)
+                pipeline_success, prompt_tokens, completion_tokens = run_pipeline_for_id(new_dataset_id)
             else:
                 logger.critical("Could not generate metadata for the new path. Pipeline halted.")
-        
+        print(f"Prompt tokens: {prompt_tokens}")
+        print(f"Completion tokens: {completion_tokens}")
         # Determine final exit code based on pipeline result
         sys.exit(0 if pipeline_success else 1)
 

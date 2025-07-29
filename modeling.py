@@ -148,7 +148,7 @@ Error message:
         
         return prompt
 
-    def generate_modeling_code(self, prompt: str) -> str:
+    def generate_modeling_code(self, prompt: str) -> Tuple[Optional[str], int, int]:
         """Generate modeling code using Gemini"""
         print(" Generating modeling code with OpenAI...")
         
@@ -162,7 +162,10 @@ Error message:
                 max_completion_tokens = 16384,
             )
             code = response.choices[0].message.content
-            
+            prompt_tokens = response.usage.prompt_tokens
+            completion_tokens = response.usage.completion_tokens
+            print(f"Prompt tokens: {prompt_tokens}")
+            print(f"Completion tokens: {completion_tokens}")
             # Extract Python code from response
             if "```python" in code:
                 code = code.split("```python")[1].split("```")[0].strip()
@@ -170,13 +173,13 @@ Error message:
                 code = code.split("```")[1].strip()
             
             print(f" Generated {len(code)} characters of modeling code")
-            return code
+            return code, prompt_tokens, completion_tokens
             
         except Exception as e:
             print(f" Error generating code: {e}")
             raise
 
-    def test_combined_pipeline(self, modeling_code: str, file_paths: List[str]) -> Tuple[bool, str]:
+    def test_combined_pipeline(self, modeling_code: str, file_paths: List[str]) -> Tuple[bool, str, int, int]:
         """Test the combined preprocessing + modeling pipeline"""
         print(" Testing combined preprocessing + modeling pipeline...")
         
@@ -200,11 +203,11 @@ Error message:
             
             if result.returncode == 0:
                 print(" Combined pipeline executed successfully!")
-                return True, result.stdout
+                return True, result.stdout, prompt_tokens, completion_tokens
             else:
                 print(" Combined pipeline execution failed!")
                 print(result.stderr)
-                return False, result.stderr
+                return False, result.stderr, 0, 0
                 
         except subprocess.TimeoutExpired:
             print("   Pipeline execution timed out after 30 minutes")
@@ -219,10 +222,10 @@ Error message:
                     pass
             
             # Return SUCCESS vì code có thể chạy được, chỉ là chậm
-            return True, "Code appears executable but runs slowly (timed out after 60 minutes)"
+            return True, "Code appears executable but runs slowly (timed out after 60 minutes)", 0, 0
         except Exception as e:
             print(f" Error executing pipeline: {e}")
-            return False, str(e)
+            return False, str(e), 0, 0
 
     def save_modeling_code(self, code: str, dataset_id: str, output_dir: str = "generated_code"):
         """Save the successful modeling code"""
@@ -247,7 +250,7 @@ Error message:
         return file_path
 
     def run_modeling_pipeline(self, guideline_file: str, meta_data_file: str, preprocessing_file: str, 
-                             dataset_id: str, output_dir: str = "generated_code") -> Optional[Path]:
+                             dataset_id: str, output_dir: str = "generated_code") -> Tuple[Optional[Path], int, int]:
         """
         Main pipeline to generate and test modeling code
         Returns path to successful code file or None if failed
@@ -271,10 +274,10 @@ Error message:
                 prompt = self.create_modeling_prompt(guidelines, metadata, preprocessing_code, previous_code, error_message)
                 print(prompt)
                 # Generate code
-                code = self.generate_modeling_code(prompt)
+                code, prompt_tokens, completion_tokens = self.generate_modeling_code(prompt)
                 
                 # Test combined pipeline
-                success, output = self.test_combined_pipeline(code, file_paths)
+                success, output, prompt_tokens, completion_tokens = self.test_combined_pipeline(code, file_paths)
                 
                 if success:
                     print(" Modeling code generated and tested successfully!")
@@ -283,7 +286,7 @@ Error message:
                     
                     # Save the successful code
                     saved_path = self.save_modeling_code(code, dataset_id, output_dir)
-                    return saved_path
+                    return saved_path, prompt_tokens, completion_tokens
                 else:
                     print(f" Attempt {attempt} failed")
                     print(f"Error: {output}")
@@ -297,12 +300,12 @@ Error message:
                     else:
                         print(f" All {self.max_retries} attempts failed!")
             
-            return None
+            return None, 0, 0
             
         except Exception as e:
             print(f" Pipeline failed with exception: {e}")
             traceback.print_exc()
-            return None
+            return None, 0, 0
 
 def main():
     """Main execution function"""
