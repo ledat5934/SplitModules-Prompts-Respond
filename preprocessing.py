@@ -176,7 +176,7 @@ Error message:
         
         return prompt
 
-    def generate_preprocessing_code(self, prompt: str) -> str:
+    def generate_preprocessing_code(self, prompt: str) -> Tuple[str, int, int]:
         """Generate preprocessing code using OpenAI."""
         print(" Generating preprocessing code with OpenAI...")
         
@@ -202,7 +202,7 @@ Error message:
             print(f"Prompt tokens: {prompt_tokens}")
             print(f"Completion tokens: {completion_tokens}")
             #print(f" Generated {len(code)} characters of code")
-            return code
+            return code, prompt_tokens, completion_tokens
 
         except Exception as e:
             print(f" Error generating code: {e}")
@@ -265,7 +265,7 @@ Error message:
         print(f" Saved preprocessing code to: {file_path}")
         return file_path
 
-    def run_preprocessing_pipeline(self, guideline_file: str, meta_data_file: str, dataset_id: str, output_dir: str = "generated_code") -> Optional[Path]:
+    def run_preprocessing_pipeline(self, guideline_file: str, meta_data_file: str, dataset_id: str, output_dir: str = "generated_code") -> Tuple[Optional[Path], int, int]:
         """
         Main pipeline to generate and test preprocessing code
         Returns path to successful code file or None if failed
@@ -289,7 +289,7 @@ Error message:
                 print(prompt)
                 
                 # Generate code
-                code = self.generate_preprocessing_code(prompt)
+                code, prompt_tokens, completion_tokens = self.generate_preprocessing_code(prompt)
                 
                 # Execute code
                 success, output = self.execute_code(code, file_paths)
@@ -298,7 +298,7 @@ Error message:
                     print(" Preprocessing code generated and tested successfully!")
                     # Save the successful code
                     saved_path = self.save_preprocessing_code(code, dataset_id, output_dir)
-                    return saved_path
+                    return saved_path, prompt_tokens, completion_tokens
                 else:
                     print(f" Attempt {attempt} failed")
                     print(f"Error: {output}")
@@ -312,12 +312,12 @@ Error message:
                     else:
                         print(f" All {self.max_retries} attempts failed!")
             
-            return None
+            return None, 0, 0
             
         except Exception as e:
             print(f" Pipeline failed with exception: {e}")
             traceback.print_exc()
-            return None
+            return None, 0, 0
 
 def main():
     """Main execution function"""
